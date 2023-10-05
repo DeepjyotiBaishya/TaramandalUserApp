@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">543199396021-kg7fn1jirneqk3ao9n8icv6ulugl3tu6.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">543199396021</string>
+    <string name="google_api_key" translatable="false">AIzaSyDx_Hl8Zq75slLQyc5sjOmzwk_2E1TUkqY</string>
+    <string name="google_app_id" translatable="false">1:543199396021:android:151483d525fce23abc7efc</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDx_Hl8Zq75slLQyc5sjOmzwk_2E1TUkqY</string>
+    <string name="google_storage_bucket" translatable="false">thetaramandal-380cd.appspot.com</string>
+    <string name="project_id" translatable="false">thetaramandal-380cd</string>
+</resources>
