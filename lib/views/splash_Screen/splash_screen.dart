@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rashi_network/services/shared_prefrence/pref_controller.dart';
 import 'package:rashi_network/services/shared_prefrence/prefrence_helper.dart';
-import 'package:rashi_network/utils/snackbar.dart';
 import 'package:rashi_network/views/home_controller.dart';
 import 'package:rashi_network/views/login/login.dart';
 

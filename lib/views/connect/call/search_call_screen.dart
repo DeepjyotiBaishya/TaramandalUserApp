@@ -143,9 +143,12 @@ class SearchCallScreen extends StatelessWidget {
                                                     right: 5,
                                                     child: CircleAvatar(
                                                       radius: 6,
-                                                      backgroundColor:
-                                                          ApiAccess.liveAstrologers[index]['is_busy'] == 'no' && ApiAccess.liveAstrologers[index]['available_call'] == 'yes'
-                                                              ? AppColors.green
+                                                      backgroundColor: ApiAccess.liveAstrologers[index]['is_online'] == 1 &&
+                                                              ApiAccess.liveAstrologers[index]['is_busy'] == 'no' &&
+                                                              ApiAccess.liveAstrologers[index]['available_call'] == 'yes'
+                                                          ? AppColors.green
+                                                          : ApiAccess.liveAstrologers[index]['is_online'] == 0 || ApiAccess.liveAstrologers[index]['available_call'] == 'no'
+                                                              ? AppColors.blackTextSecond
                                                               : AppColors.red,
                                                     )),
                                               ],
