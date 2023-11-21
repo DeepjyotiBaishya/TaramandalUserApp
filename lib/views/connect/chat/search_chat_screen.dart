@@ -148,14 +148,32 @@ class _SearchChatScreenState extends State<SearchChatScreen> {
                                                     right: 5,
                                                     child: CircleAvatar(
                                                       radius: 6,
-                                                      backgroundColor: ApiAccess.liveAstrologers[index]['is_online'] == 1 &&
-                                                              ApiAccess.liveAstrologers[index]['is_busy'] == 'no' &&
-                                                              ApiAccess.liveAstrologers[index]['available_chat'] == 'yes'
-                                                          ? AppColors.green
-                                                          : ApiAccess.liveAstrologers[index]['is_online'] == 0 || ApiAccess.liveAstrologers[index]['available_chat'] == 'no'
-                                                              ? AppColors.blackTextSecond
-                                                              : AppColors.red,
-                                                    )),
+                                                      backgroundColor:(){
+                                                        final astrologer = ApiAccess.liveAstrologers[index];
+                                                        final isOnline = astrologer['is_online'] == 1;
+                                                        final isAvailableChat = astrologer['available_chat'] == 'yes';
+                                                        final isNotBusy = astrologer['is_busy'] == 'no';
+
+                                                        if (isOnline && isAvailableChat && isNotBusy) {
+                                                          return AppColors.green;
+                                                        } else if (!isOnline && isAvailableChat && isNotBusy) {
+                                                          return AppColors.blackTextSecond;
+                                                        } else if (isOnline && isAvailableChat && !isNotBusy) {
+                                                          return AppColors.red;
+                                                        } else if (!isOnline && isAvailableChat && !isNotBusy) {
+                                                          return AppColors.red;
+                                                        } else if (!isOnline && !isAvailableChat && isNotBusy) {
+                                                          return AppColors.blackTextSecond;
+                                                        } else if (isOnline && !isAvailableChat && !isNotBusy) {
+                                                          return AppColors.green;
+                                                        } else if (!isOnline && !isAvailableChat && !isNotBusy) {
+                                                          return AppColors.blackTextSecond;
+                                                        }  else {
+                                                          return AppColors.blackTextSecond;
+                                                        }
+                                                      }()
+                                                    ),
+                                                ),
                                               ],
                                             ),
                                           ),
