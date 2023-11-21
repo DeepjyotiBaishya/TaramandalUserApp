@@ -143,13 +143,30 @@ class _CallState extends ConsumerState<Call> {
                                               right: 5,
                                               child: CircleAvatar(
                                                 radius: 6,
-                                                backgroundColor: ApiAccess.liveAstrologers[index]['is_online'] == 1 &&
-                                                        ApiAccess.liveAstrologers[index]['is_busy'] == 'no' &&
-                                                        ApiAccess.liveAstrologers[index]['available_call'] == 'yes'
-                                                    ? AppColors.green
-                                                    : ApiAccess.liveAstrologers[index]['is_online'] == 0 || ApiAccess.liveAstrologers[index]['available_call'] == 'no'
-                                                        ? AppColors.blackTextSecond
-                                                        : AppColors.red,
+                                                backgroundColor: (){
+                                                  final astrologer = ApiAccess.liveAstrologers[index];
+                                                  final isOnline = astrologer['is_online'] == 1;
+                                                  final isAvailableCall = astrologer['available_call'] == 'yes';
+                                                  final isNotBusy = astrologer['is_busy'] == 'no';
+
+                                                  if (isOnline && isAvailableCall && isNotBusy) {
+                                                    return AppColors.green;
+                                                  } else if (!isOnline && isAvailableCall && isNotBusy) {
+                                                    return AppColors.blackTextSecond;
+                                                  } else if (isOnline && isAvailableCall && !isNotBusy) {
+                                                    return AppColors.red;
+                                                  } else if (!isOnline && isAvailableCall && !isNotBusy) {
+                                                    return AppColors.red;
+                                                  } else if (!isOnline && !isAvailableCall && isNotBusy) {
+                                                    return AppColors.blackTextSecond;
+                                                  } else if (isOnline && !isAvailableCall && !isNotBusy) {
+                                                    return AppColors.green;
+                                                  } else if (!isOnline && !isAvailableCall && !isNotBusy) {
+                                                    return AppColors.blackTextSecond;
+                                                  }  else {
+                                                    return AppColors.blackTextSecond;
+                                                  }
+                                                }()
                                               )),
                                         ],
                                       ),
