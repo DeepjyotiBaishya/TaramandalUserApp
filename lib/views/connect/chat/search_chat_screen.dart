@@ -152,21 +152,21 @@ class _SearchChatScreenState extends State<SearchChatScreen> {
                                                         final astrologer = ApiAccess.liveAstrologers[index];
                                                         final isOnline = astrologer['is_online'] == 1;
                                                         final isAvailableChat = astrologer['available_chat'] == 'yes';
-                                                        final isNotBusy = astrologer['is_busy'] == 'no';
+                                                        final isBusy = astrologer['is_busy'] == 'no';
 
-                                                        if (isOnline && isAvailableChat && isNotBusy) {
+                                                        if ( isAvailableChat && isOnline && !isBusy) {
                                                           return AppColors.green;
-                                                        } else if (!isOnline && isAvailableChat && isNotBusy) {
+                                                        } else if (isAvailableChat && !isOnline && !isBusy) {
                                                           return AppColors.blackTextSecond;
-                                                        } else if (isOnline && isAvailableChat && !isNotBusy) {
+                                                        } else if (isAvailableChat && isOnline && isBusy) {
                                                           return AppColors.red;
-                                                        } else if (!isOnline && isAvailableChat && !isNotBusy) {
+                                                        } else if (isAvailableChat && !isOnline && isBusy) {
                                                           return AppColors.red;
-                                                        } else if (!isOnline && !isAvailableChat && isNotBusy) {
+                                                        } else if (!isAvailableChat && !isOnline && isBusy) {
                                                           return AppColors.blackTextSecond;
-                                                        } else if (isOnline && !isAvailableChat && !isNotBusy) {
+                                                        } else if (!isAvailableChat && isOnline && !isBusy) {
                                                           return AppColors.green;
-                                                        } else if (!isOnline && !isAvailableChat && !isNotBusy) {
+                                                        } else if (!isAvailableChat && !isOnline && !isBusy) {
                                                           return AppColors.blackTextSecond;
                                                         }  else {
                                                           return AppColors.blackTextSecond;
