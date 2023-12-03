@@ -147,21 +147,21 @@ class SearchCallScreen extends StatelessWidget {
                                                         final astrologer = ApiAccess.liveAstrologers[index];
                                                         final isOnline = astrologer['is_online'] == 1;
                                                         final isAvailableCall = astrologer['available_call'] == 'yes';
-                                                        final isNotBusy = astrologer['is_busy'] == 'no';
+                                                        final isBusy = astrologer['is_busy'] == 'no';
 
-                                                        if (isOnline && isAvailableCall && isNotBusy) {
+                                                        if ( isAvailableCall && isOnline && !isBusy) {
                                                           return AppColors.green;
-                                                        } else if (!isOnline && isAvailableCall && isNotBusy) {
+                                                        } else if (isAvailableCall && !isOnline && !isBusy) {
                                                           return AppColors.blackTextSecond;
-                                                        } else if (isOnline && isAvailableCall && !isNotBusy) {
+                                                        } else if (isAvailableCall && isOnline && isBusy) {
                                                           return AppColors.red;
-                                                        } else if (!isOnline && isAvailableCall && !isNotBusy) {
+                                                        } else if (isAvailableCall && !isOnline && isBusy) {
                                                           return AppColors.red;
-                                                        } else if (!isOnline && !isAvailableCall && isNotBusy) {
+                                                        } else if (!isAvailableCall && !isOnline && isBusy) {
                                                           return AppColors.blackTextSecond;
-                                                        } else if (isOnline && !isAvailableCall && !isNotBusy) {
+                                                        } else if (!isAvailableCall && isOnline && !isBusy) {
                                                           return AppColors.green;
-                                                        } else if (!isOnline && !isAvailableCall && !isNotBusy) {
+                                                        } else if (!isAvailableCall && !isOnline && !isBusy) {
                                                           return AppColors.blackTextSecond;
                                                         }  else {
                                                           return AppColors.blackTextSecond;
