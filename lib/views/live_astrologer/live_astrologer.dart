@@ -280,7 +280,7 @@ class _LiveAstrologerState extends State<LiveAstrologer> {
                                                   double.parse((ApiAccess.liveAstrologers[index]['chat_price'] ?? 0).toString())) {
                                                 insufficientBalancePopup(context, "${double.parse((ApiAccess.liveAstrologers[index]['chat_price'] ?? 0).toString())}", "chat");
                                               } else {
-                                                Get.to(() => AstrologerChatProfile(astrologerProfile: ApiAccess.liveAstrologers[index]));
+                                                Get.to(() => AstrologerChatProfile(astrologerProfile: ApiAccess.liveAstrologers[index], astrologer_id: ApiAccess.liveAstrologers[index]['astrologer_id'] ?? 0, name: ApiAccess.liveAstrologers[index]['name'] ?? '',));
                                               }
                                             },
                                             textLabel: 'Chat',

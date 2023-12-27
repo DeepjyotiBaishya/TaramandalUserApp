@@ -17,7 +17,10 @@ class ApiConfig {
   static const walletpaymentstatus = '${baseUrl}walletpaymentstatus';
   static const userlaunchchat = '${baseUrl}userlaunchchat';
   static const checkchatstatus = '${baseUrl}checkchatstatus';
-  static const userendchat = '${baseUrl}userendchat';
+  static const sendchatrequest = '${baseUrl}send_chat_request';
+
+
+  static const userendchat = '${baseUrl}endchat';
   static const askquestion = '${baseUrl}askquestion';
   static const contactUs = '${baseUrl}contact-us';
   static const wallethistory = '${baseUrl}wallethistory';

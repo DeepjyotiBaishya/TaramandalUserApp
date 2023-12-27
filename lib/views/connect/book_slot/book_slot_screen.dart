@@ -106,60 +106,6 @@ class _BookSlotScreenState extends State<BookSlotScreen> {
                     ]),
                   ),
                 ));
-                /* if (true) {
-                  // Get.to(() => const ChatScreen(name: 'STATIC'));
-                } else {
-                  Get.defaultDialog(
-                    backgroundColor: Colors.white,
-                    content: Column(children: [
-                      Row(
-                        children: [
-                          const Opacity(
-                            opacity: 0,
-                            child: IconButton(
-                              onPressed: null,
-                              icon: Icon(Icons.close),
-                              color: AppColors.blackBackground,
-                              padding: EdgeInsets.zero,
-                            ),
-                          ),
-                          const Expanded(
-                            child: DesignText(
-                              'Sorry!',
-                              fontSize: 18,
-                              fontWeight: 600,
-                              color: AppColors.gold,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              Get.back();
-                            },
-                            icon: const Icon(Icons.close),
-                            color: AppColors.blackBackground,
-                            padding: EdgeInsets.zero,
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: DesignText(
-                          'The Astrologer is busy with another call. Select another astrologer for chatting or wait for some time and try again.',
-                          fontSize: 16,
-                          fontWeight: 400,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ]),
-                    title: '',
-                    actions: [const Text('')],
-                    barrierDismissible: true,
-                  );
-                }*/
               },
               elevation: 1,
               shape: RoundedRectangleBorder(

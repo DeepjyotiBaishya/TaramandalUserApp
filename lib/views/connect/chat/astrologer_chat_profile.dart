@@ -12,9 +12,10 @@ import '../history/chat_screen.dart';
 import 'enter_detail_chat_Screen.dart';
 
 class AstrologerChatProfile extends StatefulWidget {
-  const AstrologerChatProfile({super.key, required this.astrologerProfile});
-
-  final Map astrologerProfile;
+  final Map<String, dynamic> astrologerProfile;
+  final int astrologer_id;
+  final name;
+  const AstrologerChatProfile({super.key, required this.astrologerProfile, required this.astrologer_id, this.name});
   @override
   State<AstrologerChatProfile> createState() => _AstrologerChatProfileState();
 }
@@ -51,6 +52,8 @@ class _AstrologerChatProfileState extends State<AstrologerChatProfile> {
               onPressed: () {
                 Get.to(() => EnterDetailChatScreen(
                       astrologerProfile: widget.astrologerProfile,
+                      astrologer_id: widget.astrologer_id,
+                      name: widget.name,
                     ));
               },
               elevation: 1,

@@ -105,6 +105,60 @@ class ChatController extends GetxController {
     return null;
   }
 
+  RxMap<String, dynamic> sendChatRequestRes = <String, dynamic>{}.obs;
+
+  Future<bool?> sendChatRequestApi({required Map<String, dynamic> data, Function? success, Function? error}) async {
+    try {
+      log(data.toString(), name: 'PARAMS');
+      log(ApiConfig.sendchatrequest, name: 'URL');
+      dio.Response response = await dio.Dio().post(
+        ApiConfig.sendchatrequest,
+        data: data,
+        options: dio.Options(headers: {
+          'Authorization': 'Bearer ' + PrefrenceDataController.to.token.value,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        sendChatRequestRes.value = response.data;
+
+        log(sendChatRequestRes.toString(), name: 'sendChatRequestRes RES');
+
+        if (response.data != null) {
+          dynamic status = response.data['status'];
+
+          if (status is bool && status) {
+            if (success != null) {
+              success();
+            }
+            return true;
+          } else {
+            if (error != null) {
+              error(response.data['message'] ?? "Something went wrong");
+            }
+          }
+        } else {
+          if (error != null) {
+            error("Something went wrong");
+          }
+          return false;
+        }
+      } else {
+        print(response.data);
+        if (error != null) {
+          error("Something went wrong");
+        }
+      }
+    } on dio.DioError catch (e) {
+      if (error != null) {
+        log((e.message ?? "").toString(), name: 'ERROR');
+        log((e.response?.data ?? "").toString(), name: 'ERROR');
+        error((e.response?.data['message'] ?? "Something went wrong").toString());
+      }
+    }
+    return null;
+  }
+
   RxMap<String, dynamic> endChatRes = <String, dynamic>{}.obs;
 
   Future<bool?> endChatApi({required Map<String, dynamic> data, Function? success, Function? error}) async {

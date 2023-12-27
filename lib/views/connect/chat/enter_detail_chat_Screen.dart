@@ -4,24 +4,20 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:rashi_network/services/api/api_service.dart';
 import 'package:rashi_network/ui/custom/custom_text_form.dart';
-import 'package:rashi_network/utils/commonWidget.dart';
 import 'package:rashi_network/utils/controller/get_profile_controller.dart';
 import 'package:rashi_network/utils/design_colors.dart';
 import 'package:rashi_network/ui/theme/text.dart';
-import 'package:rashi_network/utils/snackbar.dart';
-import 'package:rashi_network/views/bottom_controller.dart';
-import 'package:rashi_network/views/cart/payment_confirmation.dart';
-import 'package:rashi_network/views/home_controller.dart';
 
-import '../history/chat_screen.dart';
 import 'controller/chatReq_controller.dart';
+import 'new_chat/chat_screen_one.dart';
 
 class EnterDetailChatScreen extends StatefulWidget {
-  final Map astrologerProfile;
+  final Map<String, dynamic> astrologerProfile;
+  final int astrologer_id;
+  final name;
 
-  EnterDetailChatScreen({super.key, required this.astrologerProfile});
+  EnterDetailChatScreen({super.key, required this.astrologerProfile, required this.astrologer_id, this.name});
 
   @override
   State<EnterDetailChatScreen> createState() => _EnterDetailChatScreenState();
@@ -111,174 +107,154 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
               backgroundColor: AppColors.darkTeal,
               onPressed: () {
                 if (formKey.currentState!.validate()) {
-                  if (widget.astrologerProfile['is_busy'] == 'no' && widget.astrologerProfile['available_chat'] == 'yes') {
-                    // showProgress();
-                    ChatController.to.reqChatApi(
-                        data: {"astrologerid": widget.astrologerProfile['astrologer_id']},
-                        success: () {
-                          // hideProgress();
-                          String convoID = ChatController.to.reqChatRes['data']['conversationid'];
-                          String redirectUrl = ChatController.to.reqChatRes['data']['chaturl'];
-                          String name = widget.astrologerProfile['name'];
-                          // Get.offAll(() =>  HomeController());
-                          // BottomController.to.selectedIndOfBottom.value = 0;
-                          ///add from
-                          totalWaitingTime.value = 0;
-                          ChatController.to.chatStatusRes.clear();
+                  if (widget.astrologerProfile['is_busy'] == 'no' &&
+                      widget.astrologerProfile['available_chat'] == 'yes') {
+                    ///add from
+                    totalWaitingTime.value = 0;
+                    ChatController.to.chatStatusRes.clear();
 
-                          ///to
-                          _timer = Timer.periodic(
-                            const Duration(seconds: 5),
-                            (_) {
-                              log('TIMER');
-                              ChatController.to.chatStatusApi(
-                                data: {
-                                  "convoid": convoID,
-                                },
-                                success: () {
-                                  if (totalWaitingTime.value >= 65) {
-                                    log('CaNcel');
-                                    ChatController.to.chatStatusRes['data']?['status'] = 'Declined';
-                                    _timer?.cancel();
+                    var chatrequestid;
+                    if (ChatController.to.sendChatRequestRes != null &&
+                        ChatController.to.sendChatRequestRes['detail'] != null && ChatController.to.sendChatRequestRes['detail']['chat_request_id'] != null) {
+                      chatrequestid = ChatController.to
+                          .sendChatRequestRes['detail']['chat_request_id'];
+                    } else {}
 
-                                    ChatController.to.endChatApi(
-                                      data: {
-                                        "convoid": convoID,
-                                        "duration": '',
-                                        "endtime": '',
-                                      },
-                                    );
-                                  }
-                                  if ((ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Accepted') {
-                                    _timer?.cancel();
-                                    Get.back();
-                                    Get.to(
-                                      () => ChatScreen(
-                                        name: name,
-                                        url: redirectUrl,
-                                        convoId: convoID,
-                                      ),
-                                    );
-                                  }
-                                  // ChatController.to.chatStatus.value = ChatController.to.chatStatusRes['data']?['status'] ?? '';
-                                  // log(ChatController.to.chatStatus.value);
-                                  log((ChatController.to.chatStatusRes['data'] ?? '').toString());
-                                },
-                              );
-                              totalWaitingTime.value = totalWaitingTime.value + 5;
-                              log(totalWaitingTime.value.toString(), name: "totalWaitingTime");
-
-                              ///remove from
-                              /*   if (totalWaitingTime.value >= 65) {
-                                log('CaNcel OUT');
-                                ChatController.to.chatStatusRes['data']?['status'] = 'Declined';
-                                _timer?.cancel();
-                              }*/
-
-                              /// TO
+                    ///to
+                    _timer = Timer.periodic(
+                      const Duration(seconds: 5),
+                          (_) {
+                        log('TIMER');
+                        ChatController.to.chatStatusApi(
+                          data: {
+                            "chatreqid": chatrequestid,
+                          },
+                          success: () {
+                            if (totalWaitingTime.value >= 30) {
+                              log('CaNcel');
+                              ChatController.to.chatStatusRes['data']?['status'] = 3;
+                              _timer?.cancel();
+                            }
+                            ChatController.to.sendChatRequestApi(
+                              data: {
+                                "astrologerid": widget.astrologer_id,
+                                "userid": GetProfileController.to.profileRes["data"]?['user']?["id"] ?? 0,
+                              },
+                            );
+                            var chat_request_id = ChatController.to.sendChatRequestRes['detail']['chat_request_id'];
+                            if ((ChatController.to
+                                .chatStatusRes['data']?['status'] ?? 0) == 1) {
+                              _timer?.cancel();
+                              Get.back();
+                              Get.to(() => ChatScreenPage(chat_request_id, widget.astrologer_id, widget.name));
+                            }
+                            log((ChatController.to.chatStatusRes['data'] ?? 0).toString());
+                          },
+                        );
+                        totalWaitingTime.value = totalWaitingTime.value + 3;
+                        log(totalWaitingTime.value.toString(),
+                            name: "totalWaitingTime");
+                      },
+                    );
+                    Get.dialog(
+                        Dialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          child: WillPopScope(
+                            onWillPop: () async {
+                              _timer?.cancel();
+                              GetProfileController.to.getProfileApi(params: {});
+                              return true;
                             },
-                          );
-                          Get.dialog(
-                              Dialog(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                child: WillPopScope(
-                                  onWillPop: () async {
-                                    _timer?.cancel();
-                                    GetProfileController.to.getProfileApi(params: {});
-                                    return true;
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                                      Row(
-                                        children: [
-                                          const Opacity(
-                                            opacity: 0,
-                                            child: IconButton(
-                                              onPressed: null,
-                                              icon: Icon(Icons.close),
-                                              color: AppColors.blackBackground,
-                                              padding: EdgeInsets.zero,
-                                            ),
-                                          ),
-                                          Obx(() {
-                                            return Expanded(
-                                              child: DesignText(
-                                                (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Waiting'
-                                                    ? 'Waiting...'
-                                                    : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Accepted '
-                                                        ? 'Accepted ...'
-                                                        : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Completed'
-                                                            ? 'Completed...'
-                                                            : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Declined'
-                                                                ? 'Declined...'
-                                                                : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Ongoing'
-                                                                    ? 'Ongoing'
-                                                                    : 'Connecting...',
-                                                fontSize: 18,
-                                                fontWeight: 600,
-                                                color: AppColors.gold,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            );
-                                          }),
-                                          IconButton(
-                                            onPressed: () {
-                                              _timer?.cancel();
-                                              GetProfileController.to.getProfileApi(params: {});
-                                              Get.back();
-                                            },
-                                            icon: const Icon(Icons.close),
-                                            color: AppColors.blackBackground,
-                                            padding: EdgeInsets.zero,
-                                          )
-                                        ],
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min, children: [
+                                Row(
+                                  children: [
+                                    const Opacity(
+                                      opacity: 0,
+                                      child: IconButton(
+                                        onPressed: null,
+                                        icon: Icon(Icons.close),
+                                        color: AppColors.blackBackground,
+                                        padding: EdgeInsets.zero,
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                                        child: Obx(() {
-                                          return DesignText(
-                                            (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Waiting'
-                                                ? 'Please Wait Astrologer will accept Your Request And after that you can chat.'
-                                                : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Accepted '
-                                                    ? 'Astrologer has Accepted the chat Request.'
-                                                    : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Completed'
-                                                        ? 'Your chat with Astrologer has been Completed'
-                                                        : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Declined'
-                                                            ? 'Astrologer has Decline the chat Request.'
-                                                            : (ChatController.to.chatStatusRes['data']?['status'] ?? '') == 'Ongoing'
-                                                                ? 'Your chat with Astrologer is Ongoing'
-                                                                : 'Astrologer Will Connect Soon..',
-                                            fontSize: 16,
-                                            fontWeight: 400,
-                                            textAlign: TextAlign.center,
-                                          );
-                                        }),
-                                      ),
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                    ]),
-                                  ),
+                                    ),
+                                    Obx(() {
+                                      return Expanded(
+                                        child: DesignText(
+                                          (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 0
+                                              ? 'Pending...'
+                                              : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 1
+                                              ? 'Accepted ...'
+                                              : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 2
+                                              ? 'Completed...'
+                                              : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 3
+                                              ? 'Declined...'
+                                              : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 4
+                                              ? 'Unanswered'
+                                              : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 5
+                                              ? 'Failedtoconnect'
+                                              : 'Connecting...',
+                                          fontSize: 18,
+                                          fontWeight: 600,
+                                          color: AppColors.gold,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      );
+                                    }),
+                                    IconButton(
+                                      onPressed: () {
+                                        _timer?.cancel();
+                                        GetProfileController.to.getProfileApi(
+                                            params: {});
+                                        Get.back();
+                                      },
+                                      icon: const Icon(Icons.close),
+                                      color: AppColors.blackBackground,
+                                      padding: EdgeInsets.zero,
+                                    )
+                                  ],
                                 ),
-                              ),
-                              barrierDismissible: false);
-                          /* Get.to(() => ChatScreen(
-                                name: name,
-                                url: redirectUrl,
-                              ));*/
-                        },
-                        error: (e) {
-                          // hideProgress();
-
-                          showSnackBar(title: ApiConfig.error, message: e.toString());
-                        });
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  child: Obx(() {
+                                    return DesignText(
+                                      (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 0
+                                          ? 'Please Wait Astrologer will accept Your Request And after that you can chat.'
+                                          : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 1
+                                          ? 'Astrologer has Accepted the chat Request.'
+                                          : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 2
+                                          ? 'Your chat with Astrologer has been Completed'
+                                          : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 3
+                                          ? 'Astrologer has Decline the chat Request.'
+                                          : (ChatController.to.chatStatusRes['data']?['status'] ?? 0) == 4
+                                          ? 'Your chat with Astrologer is Ongoing'
+                                          : 'Astrologer Will Connect Soon..',
+                                      fontSize: 16,
+                                      fontWeight: 400,
+                                      textAlign: TextAlign.center,
+                                    );
+                                  }),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                              ]),
+                            ),
+                          ),
+                        ),
+                        barrierDismissible: false);
                   } else {
                     Get.dialog(Dialog(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
-                        child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        child: Column(
+                            mainAxisSize: MainAxisSize.min, children: [
                           Row(
                             children: [
                               const Opacity(
@@ -326,54 +302,6 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                         ]),
                       ),
                     ));
-                    /*Get.defaultDialog(
-                      backgroundColor: Colors.white,
-                      content: Column(children: [
-                        Row(
-                          children: [
-                            const Opacity(
-                              opacity: 0,
-                              child: IconButton(
-                                onPressed: null,
-                                icon: Icon(Icons.close),
-                                color: AppColors.blackBackground,
-                                padding: EdgeInsets.zero,
-                              ),
-                            ),
-                            const Expanded(
-                              child: DesignText(
-                                'Sorry!',
-                                fontSize: 18,
-                                fontWeight: 600,
-                                color: AppColors.gold,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                Get.back();
-                              },
-                              icon: const Icon(Icons.close),
-                              color: AppColors.blackBackground,
-                              padding: EdgeInsets.zero,
-                            )
-                          ],
-                        ),
-
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          child: DesignText(
-                            'The Astrologer is busy with another chat. Select another astrologer for chatting or wait for some time and try again.',
-                            fontSize: 16,
-                            fontWeight: 400,
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ]),
-                      title: '',
-                      actions: [const Text('')],
-                      barrierDismissible: true,
-                    );*/
                   }
                 }
               },
@@ -440,43 +368,6 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                   },
                 ),
                 const SizedBox(height: 10),
-                /* Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color: AppColors.lightGrey3, width: 1.0)),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: const Center(
-                          child: DesignText('Male',
-                              fontSize: 14,
-                              fontWeight: 400,
-                              color: AppColors.lightGrey1),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color: AppColors.lightGrey3, width: 1.0)),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: const Center(
-                          child: DesignText('Female',
-                              fontSize: 14,
-                              fontWeight: 400,
-                              color: AppColors.lightGrey1),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),*/
                 DropdownButtonFormField<String>(
                   value: gender,
                   validator: (val) {
@@ -562,16 +453,6 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                     );
                   }).toList(),
                 ),
-                /*   DesignFormField(
-                  controller: relation,
-                  hintText: 'Select Relationship status',
-                  validator: (val) {
-                    if (val == null || val.isEmpty) {
-                      return "Field Can't be empty";
-                    }
-                    return null;
-                  },
-                ),*/
                 const SizedBox(height: 10),
                 DropdownButtonFormField<String>(
                   value: employement,

@@ -262,7 +262,7 @@ class _SearchChatScreenState extends State<SearchChatScreen> {
                                                           onPressed: () async {
                                                             Get.back();
 
-                                                            Get.to(() => AstrologerChatProfile(astrologerProfile: ApiAccess.liveAstrologers[index]));
+                                                            Get.to(() => AstrologerChatProfile(astrologerProfile: ApiAccess.liveAstrologers[index], astrologer_id: ApiAccess.liveAstrologers[index]['astrologer_id'] ?? 0, name: ApiAccess.liveAstrologers[index]['name'] ?? '',));
                                                             showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
                                                           },
                                                           textLabel: 'Pay Now',

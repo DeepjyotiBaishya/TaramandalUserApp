@@ -486,10 +486,19 @@ class _ChatState extends ConsumerState<Chat> {
                                                   width: 120,
                                                   child: DesignButtons(
                                                     onPressed: () async {
+                                                      // final astroId = GetProfileController.to.profileRes;
+                                                      // final int newId = astroId.value["data"]?['user']?["id"] ?? 0;
+                                                      // var astrologer_id = ApiAccess.liveAstrologers[index]['astrologer_id']?? 0;
+
+                                                      var astrologerData = ApiAccess.liveAstrologers[index];
+                                                      var astrologer_id = astrologerData is Map ? astrologerData['astrologer_id'] ?? 0 : 0;
+                                                      var name = astrologerData is Map ? astrologerData['name'] ?? '' : '';
+
                                                       Get.back();
 
-                                                      Get.to(() => AstrologerChatProfile(astrologerProfile: ApiAccess.liveAstrologers[index]));
+                                                      Get.to(() => AstrologerChatProfile(astrologerProfile: astrologerData,astrologer_id: astrologer_id, name: name,));
                                                       showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
+                                                      print('Type of astrologer_id: ${astrologer_id.runtimeType}');
                                                     },
                                                     textLabel: 'Pay Now',
                                                     isTappedNotifier: ValueNotifier(false),

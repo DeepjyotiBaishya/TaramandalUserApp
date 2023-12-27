@@ -110,19 +110,6 @@ class _ChatHistoryState extends ConsumerState<ChatHistory> {
                                             fontSize: 14,
                                             fontWeight: 600,
                                           ),
-                                          // SizedBox(
-                                          //   height: 20,
-                                          //   child: ListView.builder(
-                                          //     itemCount: 3,
-                                          //     shrinkWrap: true,
-                                          //     scrollDirection: Axis.horizontal,
-                                          //     itemBuilder: (context, index) =>
-                                          //         const Padding(
-                                          //       padding: EdgeInsets.only(right: 6),
-                                          //       child: DesignText('⭐'),
-                                          //     ),
-                                          //   ),
-                                          // ),
                                         ],
                                       ),
                                       DesignText(
