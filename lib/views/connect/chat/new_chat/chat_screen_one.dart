@@ -1,14 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import '../../../../services/api/api_service.dart';
 import '../../../../utils/controller/get_profile_controller.dart';
 import '../../../../utils/design_colors.dart';
 import '../../../../utils/snackbar.dart';
 import '../../../home_controller.dart';
 import '../controller/chatReq_controller.dart';
-import 'bloc/chat_screen_bloc.dart';
-import 'model/chat_screen_models.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
+
+import 'model/model_chat.dart';
 
 class ChatScreenPage extends StatefulWidget {
   final int requestId;
@@ -21,16 +26,102 @@ class ChatScreenPage extends StatefulWidget {
 }
 
 class _ChatScreenPageState extends State<ChatScreenPage> {
-  final ChatScreenBloc _bloc = ChatScreenBloc();
   final TextEditingController _messageController = TextEditingController();
-  List<Message> _messages = [];
-  List<Communication> _communication = [];
-  ScrollController _scrollController =  ScrollController();
+  List<Message> messageList = [];
+  ScrollController _scrollController = ScrollController();
+  late WebSocketChannel _channel;
+  final channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
+  bool _isSendingMessage = false;
+
+
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    super.dispose();
+  }
+
 
   @override
   void initState() {
     super.initState();
+    _channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
+    _channel.stream.listen(_handleWebSocketData);
   }
+
+  void _sendMessage() {
+    if (_messageController.text.isNotEmpty && !_isSendingMessage) {
+      setState(() {
+        _isSendingMessage = true;
+      });
+
+      String messageText = _messageController.text;
+      print('Sending message: $messageText');
+
+      var senderId = GetProfileController.to.profileRes.value["data"]?['user']?["id"] ?? 0;
+
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('MMMM d, y').format(now);
+      String formattedTime = DateFormat('jm').format(now);
+
+      final Map<String, dynamic> messageJson = {
+        'type': 'chat_message',
+        'sender_id': senderId,
+        'recipient_id': widget.receiverId,
+        'reqid': widget.requestId,
+        'message': messageText,
+        'date': formattedDate,
+        'time': formattedTime,
+      };
+
+      final String jsonString = jsonEncode(messageJson);
+      channel.sink.add(jsonString);
+
+      _messageController.clear();
+
+      setState(() {
+        _isSendingMessage = false;
+      });
+    }
+  }
+
+  void main() {
+    final channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
+    channel.stream.listen(
+          (message) {
+        print('Received: $message');
+      },
+      onDone: () {
+        print('WebSocket closed');
+      },
+      onError: (error) {
+        print('Error: $error');
+      },
+    );
+
+    Future.delayed(Duration(seconds: 3), () {
+      channel.sink.close();
+    });
+  }
+
+  void _handleWebSocketData(dynamic data) {
+    Map<String, dynamic> jsonData = json.decode(data);
+    Message receivedMessage = Message.fromJson(jsonData);
+    if (mounted) {
+      print('Received Message: ${receivedMessage.textMessage}');
+      setState(() {
+        Future.delayed(Duration(milliseconds: 50), () {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        });
+        messageList.add(receivedMessage);
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,24 +139,25 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                     data: {"chatreqid": widget.requestId,
                     },
                     success: () {
-                      // Get.offAll(() => HomeController());
                     },
                     error: (e) {
-                      showSnackBar(title: ApiConfig.error, message: e.toString());
+                      showSnackBar(
+                          title: ApiConfig.error, message: e.toString());
                     });
                 Get.offAll(() => const HomeController());
                 GetProfileController.to.getProfileApi(params: {});
               },
               child: Text(
-                'Leave', // You can replace 'Leave' with the desired text
+                'Leave',
                 style: TextStyle(
-                  color: Colors.white, // Text color
+                  color: Colors.white,
                 ),
               ),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.white), // Border color
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.0), // Adjust the radius as needed
+                  borderRadius: BorderRadius.circular(
+                      16.0),
                 ),
               ),
             ),
@@ -77,23 +169,22 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: _messages.length,
+              itemCount: messageList.length,
               itemBuilder: (BuildContext context, int index) {
-                var item = _messages[index];
+                var item = messageList[index];
                 return ListTile(
-                  title: Row(
+                  title:  Row(
                     mainAxisAlignment: () {
                       final astroId = GetProfileController.to.profileRes;
                       final int newId = astroId.value["data"]?['user']?["id"] ?? 0;
-                      final String? incomingMsgId = _messages[index].incomingMsgId;
+                      final int? incomingMsgId = messageList[index].senderId;
 
-                      if (incomingMsgId != null && int.tryParse(incomingMsgId) == newId) {
-                        return MainAxisAlignment.start;
-                      } else {
+                      if (incomingMsgId == newId) {
                         return MainAxisAlignment.end;
+                      } else {
+                        return MainAxisAlignment.start;
                       }
                     }(),
-
                     children: [
                       Flexible(
                         child: Container(
@@ -104,43 +195,42 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                             bottom: 16,
                           ),
                           decoration: BoxDecoration(
-                            // color: _messages[index].sender: senderId ? Colors.blue : Colors.grey, // Customize colors as needed
                             color: () {
-                              final astroId = GetProfileController.to.profileRes;
-                              final int newId = astroId.value["data"]?['user']?["id"] ?? 0;
-                              final String? incomingMsgId = _messages[index].incomingMsgId;
-
-                              if (incomingMsgId != null && int.tryParse(incomingMsgId) == newId) {
-                                return  Color(0xFFE3F0F1);
-                              } else {
-                                return  Color(0xFF61CDD5);
-                              }
+                                  final astroId = GetProfileController.to.profileRes;
+                                  final int newId = astroId.value["data"]?['user']?["id"] ?? 0;
+                                  final int? incomingMsgId = messageList[index].senderId;
+                                  if (incomingMsgId == newId) {
+                                    return Color(0xFF61CDD5);
+                                  } else {
+                                    return Color(0xFFE3F0F1);
+                                  }
                             }(),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Text(
-                            _messages[index].textMessage ?? '',
-                            style: TextStyle(fontSize: 16, color: Colors.black), // You can adjust the font size and color as needed
+                            messageList[index].textMessage ?? '',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  subtitle: Row(
+                subtitle:
+                  Row(
                     mainAxisAlignment: () {
                       final astroId = GetProfileController.to.profileRes;
                       final int newId = astroId.value["data"]?['user']?["id"] ?? 0;
-                      final String? incomingMsgId = _messages[index].incomingMsgId;
+                      final int? incomingMsgId = messageList[index].senderId;
 
-                      if (incomingMsgId != null && int.tryParse(incomingMsgId) == newId) {
-                        return MainAxisAlignment.start;
-                      } else {
+                      if (incomingMsgId == newId) {
                         return MainAxisAlignment.end;
+                      } else {
+                        return MainAxisAlignment.start;
                       }
                     }(),
                     children: [
                       Text(
-                        _messages[index].currDate ?? '',
+                        messageList[index].date ?? '',
                         style: TextStyle(
                           color: Color(0xFF8A8A8A),
                           fontSize: 10,
@@ -152,7 +242,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                       ),
                       SizedBox(width: 5),
                       Text(
-                        _messages[index].currTime ?? '',
+                        messageList[index].time ?? '',
                         style: TextStyle(
                           color: Color(0xFF8A8A8A),
                           fontSize: 10,
@@ -160,7 +250,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                           fontWeight: FontWeight.w400,
                           height: 0,
                           letterSpacing: 0.35,
-                        ), // You can adjust the font size as needed
+                        ),
                       ),
                     ],
                   ),
@@ -180,7 +270,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0), // Adjust the border radius as needed
+                        borderRadius: BorderRadius.circular(10.0),
                         borderSide: BorderSide(
                           color: Colors.black,
                           width: 1.0,
@@ -205,8 +295,14 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                                   constraints: const BoxConstraints(),
                                   padding: EdgeInsets.zero,
                                   onPressed: () {
-                                    _scrollController.animateTo(_scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
-                                    _sendMessage();
+                                    _scrollController.animateTo(
+                                        _scrollController.position
+                                            .maxScrollExtent,
+                                        duration: Duration(milliseconds: 300),
+                                        curve: Curves.easeOut);
+                                    {
+                                      _sendMessage();
+                                    }
                                   },
                                   icon: const Icon(
                                     Icons.send,
@@ -227,59 +323,5 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
         ],
       ),
     );
-  }
-
-  void _sendMessage() async {
-    if (_messageController.text.isNotEmpty) {
-      // GetProfileController.to.profileRes['data']?['userdetail']?['walletamount'] ?? '';
-      var res = GetProfileController.to.profileRes;
-      var senderId = res.value["data"]?['user']?["id"] ?? 0;
-      // debugPrint("senderId $senderId");
-
-      MessageChat message = MessageChat(
-        reqid: widget.requestId,
-        sender: senderId,
-        receiver: widget.receiverId,
-        message: _messageController.text,
-      );
-
-      try {
-        var response = await _bloc.sendMessage(
-            message.toJson());
-        setState(() {
-          _messages = response.message ?? [];
-          _communication = response.communication ?? [];
-        });
-        // Handle the response here
-        // debugPrint("response $response");
-      } catch (e) {
-        // Handle error
-        print("Failed to send message: $e");
-      }
-      _messageController.clear();
-    }
-  }
-}
-
-class MessageChat {
-  int reqid;
-  int sender;
-  int receiver;
-  String message;
-
-  MessageChat({
-    required this.reqid,
-    required this.sender,
-    required this.receiver,
-    required this.message,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      "reqid": reqid,
-      "sender": sender,
-      "receiver": receiver,
-      "message": message,
-    };
   }
 }
