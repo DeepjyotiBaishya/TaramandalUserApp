@@ -111,36 +111,29 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                       widget.astrologerProfile['available_chat'] == 'yes') {
                     ///add from
                     totalWaitingTime.value = 0;
-                    ChatController.to.chatStatusRes.clear();
 
-                    var chatrequestid;
-                    if (ChatController.to.sendChatRequestRes != null &&
-                        ChatController.to.sendChatRequestRes['detail'] != null && ChatController.to.sendChatRequestRes['detail']['chat_request_id'] != null) {
-                      chatrequestid = ChatController.to
-                          .sendChatRequestRes['detail']['chat_request_id'];
-                    } else {}
-
+                    ChatController.to.sendChatRequestApi(
+                      data: {
+                        "astrologerid": widget.astrologer_id,
+                        "userid": GetProfileController.to.profileRes["data"]?['user']?["id"] ?? 0,
+                      },
+                    );
                     ///to
                     _timer = Timer.periodic(
-                      const Duration(seconds: 5),
+                      const Duration(seconds: 3),
                           (_) {
                         log('TIMER');
+                        var chatrequestid = ChatController.to.sendChatRequestRes ['detail']['chat_request_id'] ?? 0;
                         ChatController.to.chatStatusApi(
                           data: {
                             "chatreqid": chatrequestid,
                           },
                           success: () {
-                            if (totalWaitingTime.value >= 30) {
+                            if (totalWaitingTime.value >= 60) {
                               log('CaNcel');
                               ChatController.to.chatStatusRes['data']?['status'] = 3;
                               _timer?.cancel();
                             }
-                            ChatController.to.sendChatRequestApi(
-                              data: {
-                                "astrologerid": widget.astrologer_id,
-                                "userid": GetProfileController.to.profileRes["data"]?['user']?["id"] ?? 0,
-                              },
-                            );
                             var chat_request_id = ChatController.to.sendChatRequestRes['detail']['chat_request_id'];
                             if ((ChatController.to
                                 .chatStatusRes['data']?['status'] ?? 0) == 1) {

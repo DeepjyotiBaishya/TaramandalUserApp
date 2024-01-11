@@ -147,7 +147,7 @@ class _CallState extends ConsumerState<Call> {
                                                   final astrologer = ApiAccess.liveAstrologers[index];
                                                   final isOnline = astrologer['is_online'] == 1;
                                                   final isAvailableCall = astrologer['available_call'] == 'yes';
-                                                  final isBusy = astrologer['is_busy'] == 'no';
+                                                  final isBusy = astrologer['is_busy'] == 'yes';
 
                                                   if ( isAvailableCall && isOnline && !isBusy) {
                                                     return AppColors.green;

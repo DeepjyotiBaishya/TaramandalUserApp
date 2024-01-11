@@ -374,7 +374,7 @@ class _ChatState extends ConsumerState<Chat> {
                                               final astrologer = ApiAccess.liveAstrologers[index];
                                               final isOnline = astrologer['is_online'] == 1;
                                               final isAvailableChat = astrologer['available_chat'] == 'yes';
-                                              final isBusy = astrologer['is_busy'] == 'no';
+                                              final isBusy = astrologer['is_busy'] == 'yes';
 
                                               if ( isAvailableChat && isOnline && !isBusy) {
                                                 return AppColors.green;
@@ -497,7 +497,7 @@ class _ChatState extends ConsumerState<Chat> {
                                                       Get.back();
 
                                                       Get.to(() => AstrologerChatProfile(astrologerProfile: astrologerData,astrologer_id: astrologer_id, name: name,));
-                                                      showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
+                                                      // showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
                                                       print('Type of astrologer_id: ${astrologer_id.runtimeType}');
                                                     },
                                                     textLabel: 'Pay Now',

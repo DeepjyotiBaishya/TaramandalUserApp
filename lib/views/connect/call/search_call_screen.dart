@@ -147,7 +147,7 @@ class SearchCallScreen extends StatelessWidget {
                                                         final astrologer = ApiAccess.liveAstrologers[index];
                                                         final isOnline = astrologer['is_online'] == 1;
                                                         final isAvailableCall = astrologer['available_call'] == 'yes';
-                                                        final isBusy = astrologer['is_busy'] == 'no';
+                                                        final isBusy = astrologer['is_busy'] == 'yes';
 
                                                         if ( isAvailableCall && isOnline && !isBusy) {
                                                           return AppColors.green;
@@ -257,7 +257,7 @@ class SearchCallScreen extends StatelessWidget {
                                                             Get.back();
 
                                                             Get.to(() => AstrologerCallProfile(astrologerProfile: ApiAccess.liveAstrologers[index]));
-                                                            showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
+                                                            // showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
                                                           },
                                                           textLabel: 'Pay Now',
                                                           isTappedNotifier: ValueNotifier(false),

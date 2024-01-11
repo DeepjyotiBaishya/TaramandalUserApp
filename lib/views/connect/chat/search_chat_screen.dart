@@ -152,7 +152,7 @@ class _SearchChatScreenState extends State<SearchChatScreen> {
                                                         final astrologer = ApiAccess.liveAstrologers[index];
                                                         final isOnline = astrologer['is_online'] == 1;
                                                         final isAvailableChat = astrologer['available_chat'] == 'yes';
-                                                        final isBusy = astrologer['is_busy'] == 'no';
+                                                        final isBusy = astrologer['is_busy'] == 'yes';
 
                                                         if ( isAvailableChat && isOnline && !isBusy) {
                                                           return AppColors.green;
@@ -263,7 +263,7 @@ class _SearchChatScreenState extends State<SearchChatScreen> {
                                                             Get.back();
 
                                                             Get.to(() => AstrologerChatProfile(astrologerProfile: ApiAccess.liveAstrologers[index], astrologer_id: ApiAccess.liveAstrologers[index]['astrologer_id'] ?? 0, name: ApiAccess.liveAstrologers[index]['name'] ?? '',));
-                                                            showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
+                                                            // showSnackBar(title: ApiConfig.success, message: 'Payment SuccessFull...');
                                                           },
                                                           textLabel: 'Pay Now',
                                                           isTappedNotifier: ValueNotifier(false),
