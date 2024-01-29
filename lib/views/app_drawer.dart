@@ -377,6 +377,53 @@ class AppDrawer extends ConsumerWidget {
                     const Divider(color: AppColors.darkTeal, height: 1),
                     ListTile(
                       title: const DesignText(
+                        "Delete Account",
+                        fontSize: 14,
+                        fontWeight: 500,
+                        color: AppColors.darkTeal,
+                      ),
+                      leading: const Icon(
+                        FontAwesomeIcons.user,
+                        size: 20,
+                        color: AppColors.darkTeal,
+                      ),
+                      onTap: () async{
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Icon (FontAwesomeIcons.triangleExclamation),
+                                  ),
+                                  Text('Alert')
+                                ],
+                              ),
+                              content: const Text('Are you sure you want to delete'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('No', style: TextStyle(color: AppColors.darkTeal1)),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    Get.offAll(() => const LoginScreen());
+                                  },
+                                  child: Text('Yes', style: TextStyle(color: AppColors.darkTeal1)),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    const Divider(color: AppColors.darkTeal, height: 1),
+                    ListTile(
+                      title: const DesignText(
                         "Logout",
                         fontSize: 14,
                         fontWeight: 500,
