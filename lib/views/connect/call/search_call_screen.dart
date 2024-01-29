@@ -159,8 +159,6 @@ class SearchCallScreen extends StatelessWidget {
                                                           return AppColors.red;
                                                         } else if (!isAvailableCall && !isOnline && isBusy) {
                                                           return AppColors.blackTextSecond;
-                                                        } else if (!isAvailableCall && isOnline && !isBusy) {
-                                                          return AppColors.green;
                                                         } else if (!isAvailableCall && !isOnline && !isBusy) {
                                                           return AppColors.blackTextSecond;
                                                         }  else {

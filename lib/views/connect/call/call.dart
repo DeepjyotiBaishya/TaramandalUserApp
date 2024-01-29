@@ -159,8 +159,6 @@ class _CallState extends ConsumerState<Call> {
                                                     return AppColors.red;
                                                   } else if (!isAvailableCall && !isOnline && isBusy) {
                                                     return AppColors.blackTextSecond;
-                                                  } else if (!isAvailableCall && isOnline && !isBusy) {
-                                                    return AppColors.green;
                                                   } else if (!isAvailableCall && !isOnline && !isBusy) {
                                                     return AppColors.blackTextSecond;
                                                   }  else {

@@ -164,8 +164,6 @@ class _SearchChatScreenState extends State<SearchChatScreen> {
                                                           return AppColors.red;
                                                         } else if (!isAvailableChat && !isOnline && isBusy) {
                                                           return AppColors.blackTextSecond;
-                                                        } else if (!isAvailableChat && isOnline && !isBusy) {
-                                                          return AppColors.green;
                                                         } else if (!isAvailableChat && !isOnline && !isBusy) {
                                                           return AppColors.blackTextSecond;
                                                         }  else {

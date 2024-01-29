@@ -386,8 +386,6 @@ class _ChatState extends ConsumerState<Chat> {
                                                 return AppColors.red;
                                               } else if (!isAvailableChat && !isOnline && isBusy) {
                                                 return AppColors.blackTextSecond;
-                                              } else if (!isAvailableChat && isOnline && !isBusy) {
-                                                return AppColors.green;
                                               } else if (!isAvailableChat && !isOnline && !isBusy) {
                                                 return AppColors.blackTextSecond;
                                               }  else {
