@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:timer_count_down/timer_controller.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 import '../../../../services/api/api_service.dart';
 import '../../../../utils/controller/get_profile_controller.dart';
 import '../../../../utils/design_colors.dart';
@@ -19,7 +23,8 @@ class ChatScreenPage extends StatefulWidget {
   final int requestId;
   final int receiverId;
   final name;
-  const ChatScreenPage(this.requestId, this.receiverId, this.name, {Key? key}): super(key: key);
+  final String max_chat_duration;
+  const ChatScreenPage(this.requestId, this.receiverId, this.name, this.max_chat_duration, {Key? key}): super(key: key);
 
   @override
   _ChatScreenPageState createState() => _ChatScreenPageState();
@@ -32,7 +37,8 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
   late WebSocketChannel _channel;
   final channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
   bool _isSendingMessage = false;
-
+  late CountdownController _controller;
+  late int maxChatDurationInSeconds = 0;
 
 
   @override
@@ -45,9 +51,41 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
   @override
   void initState() {
     super.initState();
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        ChatController.to.endChatApi(
+          data: {"chatreqid": widget.requestId},
+          success: () {
+          },
+          error: (e) {
+            showSnackBar(
+              title: ApiConfig.error,
+              message: e.toString(),
+            );
+          },
+        );
+        Get.offAll(() => const HomeController());
+        GetProfileController.to.getProfileApi(params: {});
+      }
+    });
     _channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
     _channel.stream.listen(_handleWebSocketData);
+    _controller = CountdownController();
+    maxChatDurationInSeconds = parseDurationInSeconds(widget.max_chat_duration);
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _controller.restart();
+    });
   }
+
+  int parseDurationInSeconds(String durationString) {
+    List<String> parts = durationString.split(':');
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+    int seconds = int.parse(parts[2]);
+
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+
 
   void _sendMessage() {
     if (_messageController.text.isNotEmpty && !_isSendingMessage) {
@@ -122,7 +160,6 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,36 +168,70 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
         backgroundColor: AppColors.darkTeal2,
         title: Text(widget.name),
         actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: OutlinedButton(
-              onPressed: () {
-                ChatController.to.endChatApi(
-                    data: {"chatreqid": widget.requestId,
-                    },
+          Row(
+            children: [
+              Countdown(
+                controller: _controller,
+                seconds: maxChatDurationInSeconds,
+                build: (BuildContext context, double time) => Text(
+                  '${formatDuration(Duration(seconds: time.toInt()))}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                interval: Duration(seconds: 1),
+                onFinished: () {
+                  // This code will be executed when the countdown reaches zero
+                  ChatController.to.endChatApi(
+                    data: {"chatreqid": widget.requestId},
                     success: () {
+                      // Handle success if needed
                     },
                     error: (e) {
                       showSnackBar(
-                          title: ApiConfig.error, message: e.toString());
-                    });
-                Get.offAll(() => const HomeController());
-                GetProfileController.to.getProfileApi(params: {});
-              },
-              child: Text(
-                'Leave',
-                style: TextStyle(
-                  color: Colors.white,
+                        title: ApiConfig.error,
+                        message: e.toString(),
+                      );
+                    },
+                  );
+                  Get.offAll(() => const HomeController());
+                  GetProfileController.to.getProfileApi(params: {});
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: OutlinedButton(
+                  onPressed: () {
+                    ChatController.to.endChatApi(
+                        data: {"chatreqid": widget.requestId},
+                        success: () {
+                          // Handle success if needed
+                        },
+                        error: (e) {
+                          showSnackBar(
+                            title: ApiConfig.error,
+                            message: e.toString(),
+                          );
+                        });
+                    Get.offAll(() => const HomeController());
+                    GetProfileController.to.getProfileApi(params: {});
+                  },
+                  child: Text(
+                    'Leave',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.white), // Border color
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                  ),
                 ),
               ),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.white), // Border color
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      16.0),
-                ),
-              ),
-            ),
+            ],
           ),
         ],
       ),
@@ -323,5 +394,11 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
         ],
       ),
     );
+  }
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, "0");
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "$twoDigitMinutes:$twoDigitSeconds";
   }
 }
