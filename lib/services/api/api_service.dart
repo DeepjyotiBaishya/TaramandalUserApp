@@ -18,6 +18,7 @@ class ApiConfig {
   static const userlaunchchat = '${baseUrl}userlaunchchat';
   static const checkchatstatus = '${baseUrl}checkchatstatus';
   static const sendchatrequest = '${baseUrl}send_chat_request';
+  static const usernotification = '${baseUrl}usernotification';
 
 
   static const userendchat = '${baseUrl}endchat';

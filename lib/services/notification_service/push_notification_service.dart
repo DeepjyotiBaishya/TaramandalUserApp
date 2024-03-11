@@ -3,13 +3,17 @@ import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:rashi_network/views/connect/chat/chat.dart';
+import 'package:rashi_network/views/connect/chat/new_chat/chat_screen_one.dart';
 
 class PushNotificationService {
 // It is assumed that all messages contain a data field with the key 'type'
   Future<void> setupInteractedMessage() async {
     await Firebase.initializeApp();
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      // Get.toNamed(NOTIFICATIONS_ROUTE);
+      // Get.to(Chat());
       log(message.data.toString(), name: 'firebase_message');
 
       if (message.data['type'] == 'chat') {
