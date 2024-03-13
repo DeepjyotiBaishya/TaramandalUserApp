@@ -17,7 +17,6 @@ class CcavenuePaymentScreen extends StatefulWidget {
 }
 
 class _CcavenuePaymentScreenState extends State<CcavenuePaymentScreen> {
-  late final WebViewController _controller;
   bool loading = true;
 
   @override
@@ -69,9 +68,6 @@ class _CcavenuePaymentScreenState extends State<CcavenuePaymentScreen> {
                           enableViewportScale: true,
                           ignoresViewportScaleLimits: true)),
                   initialData: InAppWebViewInitialData(data: _loadHTML()),
-                  onWebViewCreated: (InAppWebViewController controller) {
-                    _controller = WebViewController as WebViewController;
-                  },
                   shouldOverrideUrlLoading:
                       (controller, navigationAction) async {
                     final uri = navigationAction.request.url!;
