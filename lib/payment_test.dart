@@ -1,166 +1,155 @@
-import 'dart:developer';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:rashi_network/utils/design_utlis.dart';
-import 'package:rashi_network/utils/snackbar.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:rashi_network/ui/theme/text.dart';
+import 'package:rashi_network/utils/design_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import 'package:webview_flutter_android/webview_flutter_android.dart';
-
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-
-import 'services/api/api_service.dart';
-import 'utils/controller/get_profile_controller.dart';
-import 'views/wallet/controller/add_money_controller.dart';
-
-class InstamojoPaymentScreen extends StatefulWidget {
+class CcavenuePaymentScreen extends StatefulWidget {
   final String paymentRequestUrl;
-  final String paymentRequestId;
 
-  const InstamojoPaymentScreen(
-      {super.key,
-      required this.paymentRequestUrl,
-      required this.paymentRequestId});
+  const CcavenuePaymentScreen({Key? key, required this.paymentRequestUrl,}) : super(key: key);
 
   @override
-  State<InstamojoPaymentScreen> createState() => _InstamojoPaymentScreenState();
+  State<CcavenuePaymentScreen> createState() => _CcavenuePaymentScreenState();
 }
 
-class _InstamojoPaymentScreenState extends State<InstamojoPaymentScreen> {
-  late WebViewController _controller;
+class _CcavenuePaymentScreenState extends State<CcavenuePaymentScreen> {
+  late final WebViewController _controller;
+  bool loading = true;
 
   @override
   void initState() {
     super.initState();
-
-    // #docregion platform_features
-    late PlatformWebViewControllerCreationParams params;
-    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
-      params = WebKitWebViewControllerCreationParams(
-        allowsInlineMediaPlayback: true,
-        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
-      );
-    } else {
-      params = const PlatformWebViewControllerCreationParams();
-    }
-
-    final WebViewController controller =
-        WebViewController.fromPlatformCreationParams(params);
-    // #enddocregion platform_features
-
-    controller
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          // onProgress: (int progress) {
-          //   debugPrint('WebView is loading (progress : $progress%)');
-          // },
-          // onPageStarted: (String url) {
-          //   debugPrint('Page started loading: $url');
-          // },
-          // onPageFinished: (String url) {
-          //   debugPrint('Page finished loading: $url');
-          // },
-          onNavigationRequest: (NavigationRequest request) async {
-            // Check if the URL is your redirect_url
-            debugPrint('Url:->${request.url}');
-            if (request.url
-                .startsWith('https://www.instamojo.com/order/status/')) {
-              return NavigationDecision.navigate;
-            }
-            if (request.url.startsWith('http://www.example.com/redirect/')) {
-              //https://thetaramandal.com/user/wallet/payments/success/?orderId=191
-              // await ApiAccess()
-              //     .verifyInstamojoPayment(
-              //         paymentRequestId: widget.paymentRequestId)
-              //     .then((isDone) => Navigator.pop(context, isDone));
-              final Uri url = Uri.parse(request.url);
-              // Get the payment status from the URL
-              final String paymentStatus =
-                  url.queryParameters['payment_status'] ?? '';
-              // Get the payment request ID from the URL
-              // final String paymentRequestId =
-              //     url.queryParameters['payment_request_id'] ?? '';
-              // Handle the payment status
-              if (paymentStatus == 'Credit') {
-                Navigator.pop(context, request.url);
-              }
-              //else {
-              //   Navigator.pop(context, request.url);
-              // }
-            }
-            if (request.url.startsWith('intent')) {
-              print('object 44${request.url}');
-              DesignUtlis.launchURL(request.url.replaceAll('intent', 'upi'));
-              // return NavigationDecision.prevent;
-              // if (platform.isAndroid) {
-              // AndroidIntent intent = AndroidIntent(
-              //     action: 'action_view',
-              //     data: request.url,
-              //     package: 'package=net.one97.paytm',
-              //     // arguments: {'authAccount': currentUserEmail},
-              //     );
-              // await intent.launch();
-              // }
-            }
-            // Prevent the WebView from loading the redirect_url
-            return NavigationDecision.prevent;
-          },
-          // onUrlChange: (UrlChange change) {
-          //   debugPrint('url change to ${change.url}');
-          // },
-        ),
-      )
-      ..addJavaScriptChannel(
-        'Toaster',
-        onMessageReceived: (JavaScriptMessage message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
-        },
-      )
-      ..loadRequest(Uri.parse(widget.paymentRequestUrl));
-
-    // #docregion platform_features
-    if (controller.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(true);
-      (controller.platform as AndroidWebViewController)
-          .setMediaPlaybackRequiresUserGesture(false);
-    }
-    // #enddocregion platform_features
-
-    _controller = controller;
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: WillPopScope(
-        onWillPop: () async {
-          log('BACK BY');
-          await AddMoneyController.to.addMoneyStatusApi(
-              params: {
-                "paymentrequestid": widget.paymentRequestId,
-              },
-              success: () {
-                Get.back();
-                GetProfileController.to.getProfileApi(params: {});
-                // showSnackBar(title: ApiConfig.error, message: e.toString());
-              },
-              error: (e) {
-                Get.back();
-                showSnackBar(title: ApiConfig.error, message: e.toString());
-              });
-          return false;
-        },
-        child: Scaffold(
-          body: WebViewWidget(
-            controller: _controller,
+    return Scaffold(
+      appBar: AppBar(
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: AppColors.darkTeal2,
+        title: const DesignText(
+          'Payment',
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: 600,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
           ),
         ),
+        centerTitle: true,
       ),
-    );
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: InAppWebView(
+                  initialOptions: InAppWebViewGroupOptions(
+                      crossPlatform: InAppWebViewOptions(
+                        useShouldOverrideUrlLoading: true,
+                        mediaPlaybackRequiresUserGesture: false,
+                        javaScriptEnabled: true,
+                        javaScriptCanOpenWindowsAutomatically: true,
+                      ),
+                      android: AndroidInAppWebViewOptions(
+                        useWideViewPort: false,
+                        useHybridComposition: true,
+                        loadWithOverviewMode: true,
+                        domStorageEnabled: true,
+                      ),
+                      ios: IOSInAppWebViewOptions(
+                          allowsInlineMediaPlayback: true,
+                          enableViewportScale: true,
+                          ignoresViewportScaleLimits: true)),
+                  initialData: InAppWebViewInitialData(data: _loadHTML()),
+                  onWebViewCreated: (InAppWebViewController controller) {
+                    _controller = WebViewController as WebViewController;
+                  },
+                  shouldOverrideUrlLoading:
+                      (controller, navigationAction) async {
+                    final uri = navigationAction.request.url!;
+                    print("uri = " + uri.toString());
+                    if (uri.toString().contains("phonepe://pay?") ||
+                        uri.toString().contains("paytmmp://pay?") ||
+                        uri.toString().contains("tez://upi/pay?") ||
+                        uri.toString().contains("upi://pay?")) {
+                      if (!await launchUrl(uri)) {
+                        // throw Exception('Could not launch $uri');
+                      }
+                      return NavigationActionPolicy.CANCEL;
+                    }
+                    return NavigationActionPolicy.ALLOW;
+                  },
+                  onLoadError: (controller, url, code, message) {},
+                  onLoadStop:
+                      (InAppWebViewController controller, Uri? pageUri) async {
+                    setState(() {
+                      loading = false;
+                    });
+                    final page = pageUri.toString();
+
+                    if (page == widget.paymentRequestUrl ||
+                        page == widget.paymentRequestUrl) {
+                      var html = await controller.evaluateJavascript(
+                          source:
+                          "window.document.getElementsByTagName('html')[0].outerHTML;");
+
+                      String html1 = html.toString();
+                      var htmlArr1 = html1.split('<tbody>');
+                      if (htmlArr1.length > 1) {
+                        var htmlStr1 = htmlArr1[1];
+                        var htmlArr2 = htmlStr1.split('</tbody>');
+                        if (htmlArr2.length > 0) {
+                          var jsonString = htmlArr2[0];
+                          jsonString = jsonString.replaceAll('<td>', '\"');
+                          jsonString = jsonString.replaceAll('<tr>', '');
+                          jsonString = jsonString.replaceAll('</tr>', ',');
+
+                          jsonString = jsonString.replaceAll('</td>', '\" : ');
+                          jsonString = jsonString.replaceAll(' : ,', ',');
+
+                          if (jsonString.length > 0) {
+                            jsonString =
+                                jsonString.substring(0, jsonString.length - 1);
+                          }
+
+                          jsonString = '{$jsonString}';
+
+                          Map<String, dynamic> map = jsonDecode(jsonString);
+                          String status = map['order_status'];
+
+                          Navigator.of(context)
+                              .pushReplacement(MaterialPageRoute(builder: (_) {
+                            return CcavenuePaymentScreen(paymentRequestUrl: widget.paymentRequestUrl,);
+                          }));
+                        }
+                      }
+                    }
+                  },
+                ),
+              ),
+              (loading)
+                  ? const Center(
+                child: CircularProgressIndicator(),
+              )
+                  : const Center(),
+            ],
+          ),
+        ),
+      );
+  }
+  String _loadHTML() {
+    final url = widget.paymentRequestUrl;
+
+    String html =
+        "<html> <head><meta name='viewport' content='width=device-width, initial-scale=1.0'></head> <body onload='document.f.submit();'> <form id='f' name='f' method='post' action='$url'>";
+    return html + "</form> </body> </html>";
   }
 }

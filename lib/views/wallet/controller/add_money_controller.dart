@@ -10,6 +10,7 @@ class AddMoneyController extends GetxController {
   static AddMoneyController get to => Get.put(AddMoneyController());
 
   RxMap<String, dynamic> addMoneyRes = <String, dynamic>{}.obs;
+
   // RxList waitingList = [].obs;
 
   Future<bool?> addMoneyApi({required Map params, Function? success, Function? error, String? page}) async {
@@ -18,43 +19,53 @@ class AddMoneyController extends GetxController {
     log(ApiConfig.addwalletmoney.toString(), name: 'URL');
     log(PrefrenceDataController.to.token.value.toString(), name: 'TOEKN');
     try {
-      dio.Response response = await dio.Dio().post(ApiConfig.addwalletmoney,
-          data: params,
-          options: dio.Options(
-            // contentType: dio.Headers.formUrlEncodedContentType,
-            headers: {"Authorization": "Bearer ${PrefrenceDataController.to.token.value}", "Content-Type": 'application/json', "Accept": 'application/json'},
-          ));
+      dio.Response response = await dio.Dio().post(
+        ApiConfig.addwalletmoney,
+        data: params,
+        options: dio.Options(
+          headers: {"Authorization": "Bearer ${PrefrenceDataController.to.token.value}", "Content-Type": 'application/json', "Accept": 'application/json'},
+        ),
+      );
       log(response.toString(), name: 'RESPONSE');
 
       if (response.statusCode == 200) {
-        addMoneyRes.value = response.data;
-        log(addMoneyRes.toString(), name: 'loginRes');
-
-        // log(analyticsRes.toString(), name: 'analyticsRes ');
-        // waitingList.value = response.data;
-
+        // Check if response data is not null
         if (response.data != null) {
-          if (addMoneyRes['status']) {
-            if (success != null) {
+          addMoneyRes.value = response.data;
+          log(addMoneyRes.toString(), name: 'loginRes');
+
+          // Check for the existence of 'data' in addMoneyRes
+          if (addMoneyRes['data'] != null) {
+            bool successStatus = addMoneyRes['data']['success'] ?? false;
+
+            if (success != null && addMoneyRes['data'] != null && addMoneyRes['data']['paymenturl'] != null) {
               success();
+            }
+
+            if (successStatus) {
+              if (success != null) {
+                success();
+              }
+              return true;
+            } else {
+              if (error != null) {
+                error(addMoneyRes['data']['message'] ?? 'Payment failed');
+              }
             }
           } else {
             if (error != null) {
-              error(addMoneyRes['message'] ?? 'Something went Wrong..');
+              error('Data not found in response.');
             }
           }
-
-          return true;
         } else {
           if (error != null) {
-            error(jsonDecode(response.data.toString())['message'] ?? 'Something went Wrong..');
+            error('Response data is null.');
           }
-          return false;
         }
       } else {
         print(response.data);
         if (error != null) {
-          error(jsonDecode(response.data.toString())['message'] ?? 'Something went Wrong..');
+          error(jsonDecode(response.data.toString())['message'] ?? 'Something went wrong..');
         }
       }
     } on dio.DioError catch (e) {
@@ -63,23 +74,31 @@ class AddMoneyController extends GetxController {
         error(e.response?.data['data'] ?? e.response?.data['message'] ?? "Something went wrong");
       }
     }
-    return null;
+    return false;
   }
 
   RxMap<String, dynamic> addMoneyStatusRes = <String, dynamic>{}.obs;
+
   // RxList waitingList = [].obs;
 
-  Future<bool?> addMoneyStatusApi({required Map params, Function? success, Function? error, String? page}) async {
-    PrefrenceDataController.to.token.value = await PreferencesHelper().getPreferencesStringData(PreferencesHelper.token) ?? '';
+  Future<bool?> addMoneyStatusApi(
+      {required Map params, Function? success, Function? error, String? page}) async {
+    PrefrenceDataController.to.token.value =
+        await PreferencesHelper().getPreferencesStringData(
+            PreferencesHelper.token) ?? '';
     log(params.toString(), name: 'PARAMS');
     log(ApiConfig.walletpaymentstatus.toString(), name: 'URL');
     log(PrefrenceDataController.to.token.value.toString(), name: 'TOEKN');
     try {
-      dio.Response response = await dio.Dio().post(ApiConfig.walletpaymentstatus,
+      dio.Response response = await dio.Dio().post(
+          ApiConfig.walletpaymentstatus,
           data: params,
           options: dio.Options(
             // contentType: dio.Headers.formUrlEncodedContentType,
-            headers: {"Authorization": "Bearer ${PrefrenceDataController.to.token.value}"},
+            headers: {
+              "Authorization": "Bearer ${PrefrenceDataController.to.token
+                  .value}"
+            },
           ));
       log(response.toString(), name: 'RESPONSE');
 

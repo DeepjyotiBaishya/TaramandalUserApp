@@ -59,14 +59,10 @@ class _PaymentInformationState extends State<PaymentInformation> {
                     },
                     success: () {
                       log(
-                          AddMoneyController.to.addMoneyRes['data']
-                                  ?['longurl'] ??
-                              "null",
+                          AddMoneyController.to.addMoneyRes['data']?['paymenturl'] ?? "null",
                           name: 'REDIRECT URL');
-                      if ((AddMoneyController.to.addMoneyRes['data']
-                                  ?['longurl'] ??
-                              null) ==
-                          null) {
+
+                      if ((AddMoneyController.to.addMoneyRes['data']?['paymenturl'] ?? null) == null) {
                         showSnackBar(
                             title: ApiConfig.error,
                             message: 'Something Went Wrong Try Again');
@@ -74,11 +70,8 @@ class _PaymentInformationState extends State<PaymentInformation> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => InstamojoPaymentScreen(
-                                paymentRequestId: AddMoneyController
-                                    .to.addMoneyRes['data']['id'],
-                                paymentRequestUrl: AddMoneyController
-                                    .to.addMoneyRes['data']['longurl'],
+                              builder: (context) => CcavenuePaymentScreen(
+                                paymentRequestUrl: AddMoneyController.to.addMoneyRes['data']['paymenturl'],
                               ),
                             ));
                       }

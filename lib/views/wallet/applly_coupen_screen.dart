@@ -64,11 +64,11 @@ class _ApplyCoupenScreenState extends State<ApplyCoupenScreen> {
                     success: () {
                       log(
                           AddMoneyController.to.addMoneyRes['data']
-                                  ?['longurl'] ??
+                                  ?['paymenturl'] ??
                               "null",
                           name: 'REDIRECT URL');
                       if ((AddMoneyController.to.addMoneyRes['data']
-                                  ?['longurl'] ??
+                                  ?['paymenturl'] ??
                               null) ==
                           null) {
                         showSnackBar(
@@ -78,11 +78,9 @@ class _ApplyCoupenScreenState extends State<ApplyCoupenScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => InstamojoPaymentScreen(
-                                paymentRequestId: AddMoneyController
-                                    .to.addMoneyRes['data']['id'],
+                              builder: (context) => CcavenuePaymentScreen(
                                 paymentRequestUrl: AddMoneyController
-                                    .to.addMoneyRes['data']['longurl'],
+                                    .to.addMoneyRes['data']['paymenturl'],
                               ),
                             ));
                       }
