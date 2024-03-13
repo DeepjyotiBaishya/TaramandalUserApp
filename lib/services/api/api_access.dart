@@ -247,7 +247,7 @@ class ApiAccess {
       }
       if (res.data["success"]) {
         //   var data = res.data['data']['astrologer']['data'] as List;
-        return res.data['payment_request']['longurl'];
+        return res.data['payment_request']['paymenturl'];
       }
       return '';
     } on dio.DioError catch (e) {
