@@ -19,6 +19,7 @@ class ApiConfig {
   static const checkchatstatus = '${baseUrl}checkchatstatus';
   static const sendchatrequest = '${baseUrl}send_chat_request';
   static const usernotification = '${baseUrl}usernotification';
+  static const deleteuser = '${baseUrl}deleteuser';
 
 
   static const userendchat = '${baseUrl}endchat';
@@ -27,4 +28,7 @@ class ApiConfig {
   static const wallethistory = '${baseUrl}wallethistory';
   static const userCalllist = '${baseUrl}user-calllist';
   static const userChatlist = '${baseUrl}user-chatlist';
+  static const reviewRating = '${baseUrl}review_rating';
+  static const showReviewRatings = '${baseUrl}show_reviewratings';
+
 }

@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:html/parser.dart';
-import 'package:rashi_network/ui/theme/container.dart';
 import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
-import 'package:rashi_network/viewmodel/model/astrologer_model.dart';
-import 'package:rashi_network/views/connect/chat/chat_screen.dart';
 import 'package:rashi_network/views/home_controller.dart';
 
-class RateAstrologerScreen extends StatefulWidget {
-  const RateAstrologerScreen({super.key, required this.astrologer});
+import '../../../services/api/api_service.dart';
+import '../../../utils/snackbar.dart';
+import 'controller/chatReq_controller.dart';
 
-  final Map astrologer;
+class RateAstrologerScreen extends StatefulWidget {
+  final astrologer;
+  final name;
+  const RateAstrologerScreen({super.key, required this.astrologer, required this.name});
+
   @override
   State<RateAstrologerScreen> createState() => _RateAstrologerScreenState();
 }
 
 class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
   final text = TextEditingController();
+  double selectedRating = 3.0;
+
   @override
   Widget build(BuildContext context) {
-    var document = parse('LONG Bio' ?? '');
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -66,8 +68,8 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              const DesignText(
-                'Astrologer Name',
+              DesignText(
+                widget.name,
                 fontSize: 15,
                 fontWeight: 700,
               ),
@@ -84,7 +86,11 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
                   Icons.star,
                   color: Colors.amber,
                 ),
+
                 onRatingUpdate: (rating) {
+                  setState(() {
+                    selectedRating = rating;
+                  });
                   print(rating);
                 },
               ),
@@ -155,7 +161,7 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
                                   ]),
                             ),
                           ));
-                      /*Get.defaultDialog(
+                      Get.defaultDialog(
                         onWillPop: () async {
                           Get.offAll(() => HomeController());
                           return false;
@@ -208,7 +214,7 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
                         title: '',
                         actions: [const Text('')],
                         barrierDismissible: true,
-                      );*/
+                      );
                     },
                     child: const DesignText(
                       'skip',
@@ -262,6 +268,22 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
                                 constraints: const BoxConstraints(),
                                 padding: EdgeInsets.zero,
                                 onPressed: () {
+                                  String reviewText = text.text.trim();
+                                  ChatController.to.reviewRatingApi(
+                                    data: {
+                                      "astrologerid": widget.astrologer,
+                                      "review": reviewText,
+                                      "rating": selectedRating,
+                                    },
+                                    success: () {
+                                    },
+                                    error: (e) {
+                                      showSnackBar(
+                                        title: ApiConfig.error,
+                                        message: e.toString(),
+                                      );
+                                    },
+                                  );
                                   Get.dialog(
                                       barrierDismissible: false,
                                       Dialog(

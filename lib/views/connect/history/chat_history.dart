@@ -5,13 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:rashi_network/ui/custom/design_single_tap.dart';
-import 'package:rashi_network/ui/theme/buttons/buttons.dart';
 import 'package:rashi_network/ui/theme/container.dart';
 import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
-import 'package:rashi_network/viewmodel/provider/appstate.dart';
-import 'package:rashi_network/views/connect/chat/astrologer_chat_profile.dart';
-import 'package:rashi_network/views/connect/chat/chat_screen.dart';
 
 import 'controller/history_controller.dart';
 
@@ -25,7 +21,6 @@ class ChatHistory extends ConsumerStatefulWidget {
 class _ChatHistoryState extends ConsumerState<ChatHistory> {
   @override
   void initState() {
-    // TODO: implement initState
     log('INIT CALL HISTORY');
     HistoryController.to.userChatHistoryApi(params: {});
     super.initState();

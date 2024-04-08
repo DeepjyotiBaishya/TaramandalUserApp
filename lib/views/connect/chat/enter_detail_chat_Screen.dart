@@ -116,6 +116,14 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                       data: {
                         "astrologerid": widget.astrologer_id,
                         "userid": GetProfileController.to.profileRes["data"]?['user']?["id"] ?? 0,
+                        "name": name.text,
+                        "dob" : birthDate.text,
+                        "birthtime" : birthTime.text,
+                        "gender" : gender,
+                        "relationshipstatus" : relation,
+                        "employmentstatus" : employement,
+                        "profession" : profession.text,
+                        "message" : message.text,
                       },
                     );
                     ///to
@@ -134,12 +142,13 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                               ChatController.to.chatStatusRes['data']?['status'] = 3;
                               _timer?.cancel();
                             }
-                            var chat_request_id = ChatController.to.sendChatRequestRes['detail']['chat_request_id'];
+                            var chat_request_id = ChatController.to.sendChatRequestRes['detail']['chat_request_id'] ?? 0;
+                            var max_chat_duration = ChatController.to.sendChatRequestRes['detail']['max_chat_duration'] ?? '';
                             if ((ChatController.to
                                 .chatStatusRes['data']?['status'] ?? 0) == 1) {
                               _timer?.cancel();
                               Get.back();
-                              Get.to(() => ChatScreenPage(chat_request_id, widget.astrologer_id, widget.name));
+                              Get.to(() => ChatScreenPage(chat_request_id, widget.astrologer_id, widget.name, max_chat_duration));
                             }
                             log((ChatController.to.chatStatusRes['data'] ?? 0).toString());
                           },

@@ -35,6 +35,7 @@ class Call extends ConsumerStatefulWidget {
 }
 
 class _CallState extends ConsumerState<Call> {
+  bool isFilterApplied = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +73,24 @@ class _CallState extends ConsumerState<Call> {
             },
           ),
         ),
-        body: Obx(() {
+        body: Column(
+            children: [
+              OutlinedButton(
+               onPressed: () {
+                setState(()
+                     {
+                   isFilterApplied = !isFilterApplied;
+                });
+              },
+                  child: Text(isFilterApplied ? 'Clear' : 'Live Astro', style: TextStyle(color: isFilterApplied ? Colors.red : AppColors.darkTeal2),) ,
+                  style: OutlinedButton.styleFrom(
+                 side: BorderSide(
+                 color: isFilterApplied ? Colors.red : AppColors.darkTeal2,
+              ),
+            ),
+         ),
+
+          Expanded (child: Obx(() {
           return ApiAccess.liveAstrologers.isEmpty
               ? Center(
                   child: Column(
@@ -94,6 +112,11 @@ class _CallState extends ConsumerState<Call> {
                   padding: const EdgeInsets.all(12),
                   itemBuilder: (context, index) {
                     // final livedata = data[index];
+                    final astrologer = ApiAccess.liveAstrologers[index];
+                    // final livedata = data[index];
+                    if (isFilterApplied && !(astrologer['is_online'] == 1 && astrologer['available_chat'] == 'yes')) {
+                      return SizedBox.shrink();
+                    }
                     return DesignSingleTap(
                       isTappedNotifier: ValueNotifier(false),
                       onTap: () async {
@@ -331,6 +354,11 @@ class _CallState extends ConsumerState<Call> {
                     );
                   },
                 );
-        }));
+        }
+        )
+    )
+    ]
+        )
+    );
   }
 }

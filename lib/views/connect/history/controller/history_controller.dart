@@ -90,9 +90,6 @@ class HistoryController extends GetxController {
         userChatHistoryRes.value = response.data;
         log(userChatHistoryRes.toString(), name: 'userChatHistoryRes');
 
-        // log(analyticsRes.toString(), name: 'analyticsRes ');
-        // waitingList.value = response.data;
-
         if (response.data != null) {
           if (response.data['status']) {
             if (success != null) {

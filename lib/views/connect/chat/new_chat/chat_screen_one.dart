@@ -17,6 +17,7 @@ import '../controller/chatReq_controller.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 
+import '../rate_astrologer.dart';
 import 'model/model_chat.dart';
 
 class ChatScreenPage extends StatefulWidget {
@@ -64,8 +65,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
             );
           },
         );
-        Get.offAll(() => const HomeController());
-        GetProfileController.to.getProfileApi(params: {});
+        Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name));
       }
     });
     _channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
@@ -182,7 +182,6 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                 ),
                 interval: Duration(seconds: 1),
                 onFinished: () {
-                  // This code will be executed when the countdown reaches zero
                   ChatController.to.endChatApi(
                     data: {"chatreqid": widget.requestId},
                     success: () {
@@ -195,10 +194,10 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                       );
                     },
                   );
-                  Get.offAll(() => const HomeController());
-                  GetProfileController.to.getProfileApi(params: {});
-                },
-              ),
+                  // GetProfileController.to.getProfileApi(params: {});
+                  // Get.offAll(() => const HomeController());
+                  Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name));
+                }),
               Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: OutlinedButton(
@@ -214,8 +213,9 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                             message: e.toString(),
                           );
                         });
-                    Get.offAll(() => const HomeController());
-                    GetProfileController.to.getProfileApi(params: {});
+                    Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name));
+                    // Get.offAll(() => const HomeController());
+                    // GetProfileController.to.getProfileApi(params: {});
                   },
                   child: Text(
                     'Leave',
