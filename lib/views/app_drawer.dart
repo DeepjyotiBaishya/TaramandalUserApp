@@ -411,7 +411,24 @@ class AppDrawer extends ConsumerWidget {
                                 ),
                                 TextButton(
                                   onPressed: () async {
-                                    Get.offAll(() => const LoginScreen());
+                                    GetProfileController.to.deleteUserApi(
+                                      data: {},
+                                      success: (response) {
+                                        // Access the success message from the API response
+                                        final message = response['message'];
+                                        showSnackBar(
+                                          title: ApiConfig.success,
+                                          message: message ?? 'Account deletion successful',
+                                        );
+                                        Get.offAll(() => const LoginScreen());
+                                      },
+                                      error: (e) {
+                                        showSnackBar(
+                                          title: ApiConfig.error,
+                                          message: e.toString(),
+                                        );
+                                      },
+                                    );
                                   },
                                   child: Text('Yes', style: TextStyle(color: AppColors.darkTeal1)),
                                 ),

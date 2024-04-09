@@ -25,6 +25,12 @@ class MoreForYouCardGrid extends StatelessWidget {
     void onTap(int index) {
       switch (index) {
         case 0:
+          Get.to(() => const PremiumKundaliList());
+          break;
+        case 1:
+          BottomController.to.selectedIndOfBottom.value = 3;
+          break;
+        case 2:
           Get.to(() => const HealersChatList());
           /* Navigator.push(
             context,
@@ -33,12 +39,6 @@ class MoreForYouCardGrid extends StatelessWidget {
                 builder: (context) => */ /* const ReikhiHealing()*/ /*
                     HealersChatList()),
           );*/
-          break;
-        case 1:
-          BottomController.to.selectedIndOfBottom.value = 3;
-          break;
-        case 2:
-          Get.to(() => const PremiumKundaliList());
 
           break;
         case 3:
