@@ -47,11 +47,8 @@ class AddMoneyController extends GetxController {
                 success();
               }
               return true;
-            } else {
-              if (error != null) {
-                error(addMoneyRes['data']['message'] ?? 'Payment failed');
-              }
             }
+            
           } else {
             if (error != null) {
               error('Data not found in response.');
@@ -83,9 +80,7 @@ class AddMoneyController extends GetxController {
 
   Future<bool?> addMoneyStatusApi(
       {required Map params, Function? success, Function? error, String? page}) async {
-    PrefrenceDataController.to.token.value =
-        await PreferencesHelper().getPreferencesStringData(
-            PreferencesHelper.token) ?? '';
+    PrefrenceDataController.to.token.value = await PreferencesHelper().getPreferencesStringData(PreferencesHelper.token) ?? '';
     log(params.toString(), name: 'PARAMS');
     log(ApiConfig.walletpaymentstatus.toString(), name: 'URL');
     log(PrefrenceDataController.to.token.value.toString(), name: 'TOEKN');
