@@ -25,8 +25,7 @@ class GetProfileController extends GetxController {
     log(params.toString(), name: 'PARAMS');
     try {
       PrefrenceDataController.to.token.value = await PreferencesHelper()
-              .getPreferencesStringData(PreferencesHelper.token) ??
-          '';
+              .getPreferencesStringData(PreferencesHelper.token) ?? '';
       dio.Response response = await dio.Dio().post(ApiConfig.viewprofile,
           data: params,
           options: dio.Options(
@@ -164,6 +163,65 @@ class GetProfileController extends GetxController {
             if (error != null) {
               error(jsonDecode(response.data.toString())['message'] ??
                   'Something went Wrong..');
+            }
+          }
+
+          return true;
+        } else {
+          if (error != null) {
+            error(response.data['message'] ?? 'Something went Wrong..');
+          }
+          return false;
+        }
+      } else {
+        print(response.data);
+        if (error != null) {
+          error(response.data['message'] ?? 'Something went Wrong..');
+        }
+      }
+    } on dio.DioError catch (e) {
+      log(e.message.toString());
+      if (error != null) {
+        error("Something went wrong");
+      }
+    }
+    return null;
+  }
+
+
+  RxMap<String, dynamic> deleteUserRes = <String, dynamic>{}.obs;
+  // RxList waitingList = [].obs;
+  static RxList deleteUser = [].obs;
+  Future<bool?> deleteUserApi({
+    required Map<String, dynamic> data,
+    Function(Map<String, dynamic>)? success,
+    Function(String)? error,
+  }) async {
+    try {
+      log(data.toString(), name: 'PARAMS');
+      log(ApiConfig.deleteuser, name: 'URL');
+      dio.Response response = await dio.Dio().post(
+        ApiConfig.deleteuser,
+        data: data,
+        options: dio.Options(headers: {
+          'Authorization': 'Bearer ' + PrefrenceDataController.to.token.value,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        deleteUserRes.value = response.data;
+        log(deleteUserRes.toString(), name: 'deleteUserRes');
+
+        if (response.data != null) {
+          if (response.data['status']) {
+            if (success != null) {
+              // Pass the response data to the success callback
+              success(response.data);
+            }
+          } else {
+            if (error != null) {
+              // Pass the error message to the error callback
+              error(response.data['message'] ?? 'Something went Wrong..');
             }
           }
 

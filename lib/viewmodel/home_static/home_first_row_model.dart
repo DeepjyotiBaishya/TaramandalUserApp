@@ -23,7 +23,7 @@ class HomeFirstModel {
       svg: AssetsName.svgPremiumkundli,
     ),
     HomeFirstModelItem(
-      title: 'Tarot',
+      title: 'Blog',
       image: 'assets/img/blog.png',
       iconData: PhosphorIcons.clipboard,
     ),
