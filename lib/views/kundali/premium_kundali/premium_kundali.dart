@@ -66,8 +66,8 @@ class _PremiumKundaliListState extends State<PremiumKundaliList> with SingleTick
             children: [
               GestureDetector(
                 onTap: () {
-                  if (double.parse((GetProfileController.to.profileRes['data']?['userdetail']?['walletamount'] ?? '0.00').toString()) < 1800) {
-                    insufficientBalancePopup(context, "1800", "get Answer of Question & Kundly Details");
+                  if (double.parse((GetProfileController.to.profileRes['data']?['userdetail']?['walletamount'] ?? '0.00').toString()) < 999) {
+                    insufficientBalancePopup(context, "999", "get Answer of Question & Kundly Details");
                   } else {
                     Get.dialog(Dialog(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -227,8 +227,17 @@ class _PremiumKundaliListState extends State<PremiumKundaliList> with SingleTick
                                   children: [
                                     DesignText(
                                       'Rs.1800',
-                                      fontSize: 14,
+                                      fontSize: 12,
                                       fontWeight: 600,
+                                      decoration: TextDecoration.lineThrough,
+                                      // You can add other styling properties as needed
+                                    ),
+                                    SizedBox(width: 8),
+                                    DesignText(
+                                      'Rs.999',
+                                      fontWeight: 600,
+                                      fontSize: 16,
+                                      // Add other styling properties for the discounted price
                                     ),
                                   ],
                                 )
