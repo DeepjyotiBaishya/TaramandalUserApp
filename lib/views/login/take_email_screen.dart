@@ -19,6 +19,7 @@ import 'package:rashi_network/utils/snackbar.dart';
 import 'package:rashi_network/views/home_controller.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../profile/my_Account.dart';
 import 'Controller/update_email_controller.dart';
 
 class TakeEmailScreen extends StatefulWidget {
@@ -72,7 +73,7 @@ class _TakeEmailScreenState extends State<TakeEmailScreen> {
                           'referral': _referralCode.text,
                         },
                         success: () {
-                          Get.offAll(() => const HomeController());
+                          Get.to(() => const MyAccountScreen());
                         },
                         error: (e) {
                           // Get.offAll(() => const HomeController());

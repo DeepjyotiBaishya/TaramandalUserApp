@@ -11,6 +11,7 @@ import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/snackbar.dart';
 import 'package:rashi_network/views/cart/payment_confirmation.dart';
 
+import '../home.dart';
 import 'controller/edit_profile_controller.dart';
 
 class MyAccountScreen extends StatefulWidget {
@@ -165,6 +166,7 @@ class _MyAccountScreenState extends State<MyAccountScreen> {
                                           ),
                                           IconButton(
                                             onPressed: () {
+                                              Get.offAll(() => HomeScreen());
                                               Get.back();
                                             },
                                             icon: const Icon(Icons.close),
