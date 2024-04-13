@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:rashi_network/services/ad_service/get_ads.dart';
 import 'package:rashi_network/ui/theme/container.dart';
 import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
-import 'package:rashi_network/views/connect/chat/chat_screen.dart';
-import 'package:rashi_network/views/connect/history/chat_screen.dart';
-import 'package:rashi_network/views/reikhi_healing/chat/chat_healers.dart';
 
 class HealersProfile extends StatefulWidget {
   const HealersProfile({super.key, required this.index});
