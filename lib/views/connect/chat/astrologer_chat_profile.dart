@@ -5,10 +5,6 @@ import 'package:rashi_network/common/common_function.dart';
 import 'package:rashi_network/ui/theme/container.dart';
 import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
-import 'package:rashi_network/viewmodel/model/astrologer_model.dart';
-import 'package:rashi_network/views/connect/chat/chat_screen.dart';
-
-import '../history/chat_screen.dart';
 import 'enter_detail_chat_Screen.dart';
 
 class AstrologerChatProfile extends StatefulWidget {

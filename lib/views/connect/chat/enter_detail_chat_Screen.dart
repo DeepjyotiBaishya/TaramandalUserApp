@@ -148,7 +148,7 @@ class _EnterDetailChatScreenState extends State<EnterDetailChatScreen> {
                                 .chatStatusRes['data']?['status'] ?? 0) == 1) {
                               _timer?.cancel();
                               Get.back();
-                              Get.to(() => ChatScreenPage(chat_request_id, widget.astrologer_id, widget.name, max_chat_duration));
+                              Get.to(() => ChatScreenPage(chat_request_id, widget.astrologer_id, widget.name, max_chat_duration,  astrologerProfile: widget.astrologerProfile));
                             }
                             log((ChatController.to.chatStatusRes['data'] ?? 0).toString());
                           },

@@ -4,18 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rashi_network/common/common_function.dart';
 import 'package:rashi_network/services/api/api_access.dart';
-import 'package:rashi_network/services/api/api_service.dart';
 import 'package:rashi_network/ui/custom/custom_text_form.dart';
 import 'package:rashi_network/ui/custom/design_single_tap.dart';
 import 'package:rashi_network/ui/theme/buttons/buttons.dart';
 import 'package:rashi_network/ui/theme/container.dart';
 import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
-import 'package:rashi_network/utils/snackbar.dart';
-import 'package:rashi_network/viewmodel/model/astrologer_model.dart';
 import 'package:rashi_network/views/connect/call/astrologer_call_profile.dart';
-import 'package:rashi_network/views/connect/chat/astrologer_chat_profile.dart';
-import 'package:rashi_network/views/connect/history/chat_screen.dart';
+
+import '../chat/rating_screen.dart';
 
 class SearchCallScreen extends StatelessWidget {
   SearchCallScreen({Key? key}) : super(key: key);
@@ -101,13 +98,10 @@ class SearchCallScreen extends StatelessWidget {
                             return DesignSingleTap(
                               isTappedNotifier: ValueNotifier(false),
                               onTap: () async {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => AstrologerProfile(
-                                //         index: index, astrologerModel: livedata),
-                                //   ),
-                                // );
+                                var astrologerData = ApiAccess.liveAstrologers[index];
+                                var astrologer_id = astrologerData is Map ? astrologerData['astrologer_id'] ?? 0 : 0;
+
+                                Get.to(() => RatingScreen(astrologer_id));
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(bottom: 12),
@@ -203,6 +197,12 @@ class SearchCallScreen extends StatelessWidget {
                                                   fontSize: 12,
                                                   fontWeight: 500,
                                                   color: AppColors.red,
+                                                ),
+                                                DesignText(
+                                                  '⭐⭐⭐⭐⭐',
+                                                  fontSize: 12,
+                                                  fontWeight: 500,
+                                                  color: Colors.orange,
                                                 ),
                                               ],
                                             ),

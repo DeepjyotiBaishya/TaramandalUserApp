@@ -3,10 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:instamojo/widgets/wallet/wallet.dart';
 import 'package:rashi_network/common/common_function.dart';
 import 'package:rashi_network/services/api/api_access.dart';
-import 'package:rashi_network/services/api/api_service.dart';
 import 'package:rashi_network/ui/custom/design_single_tap.dart';
 import 'package:rashi_network/ui/theme/buttons/buttons.dart';
 import 'package:rashi_network/ui/theme/container.dart';
@@ -14,12 +12,10 @@ import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/commonWidget.dart';
 import 'package:rashi_network/utils/controller/get_profile_controller.dart';
 import 'package:rashi_network/utils/design_colors.dart';
-import 'package:rashi_network/utils/snackbar.dart';
 import 'package:rashi_network/views/bottom_controller.dart';
-import 'package:rashi_network/views/connect/chat/chat_screen.dart';
 
 import '../book_slot/book_slot_screen.dart';
-import '../chat/search_chat_screen.dart';
+import '../chat/rating_screen.dart';
 import 'astrologer_call_profile.dart';
 import 'search_call_screen.dart';
 
@@ -121,13 +117,10 @@ class _CallState extends ConsumerState<Call> {
                       isTappedNotifier: ValueNotifier(false),
                       onTap: () async {
                         log(ApiAccess.liveAstrologers.toString());
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => AstrologerProfile(
-                        //         index: index, astrologerModel: livedata),
-                        //   ),
-                        // );
+                        var astrologerData = ApiAccess.liveAstrologers[index];
+                        var astrologer_id = astrologerData is Map ? astrologerData['astrologer_id'] ?? 0 : 0;
+
+                        Get.to(() => RatingScreen(astrologer_id));
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 12),
@@ -235,6 +228,12 @@ class _CallState extends ConsumerState<Call> {
                                           fontSize: 12,
                                           fontWeight: 500,
                                           color: AppColors.red,
+                                        ),
+                                        DesignText(
+                                          '⭐⭐⭐⭐⭐',
+                                          fontSize: 12,
+                                          fontWeight: 500,
+                                          color: Colors.orange,
                                         ),
                                         const SizedBox(
                                           height: 8,

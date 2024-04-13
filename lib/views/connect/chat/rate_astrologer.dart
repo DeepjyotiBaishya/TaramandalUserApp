@@ -5,6 +5,7 @@ import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
 import 'package:rashi_network/views/home_controller.dart';
 
+import '../../../services/api/api_access.dart';
 import '../../../services/api/api_service.dart';
 import '../../../utils/snackbar.dart';
 import 'controller/chatReq_controller.dart';
@@ -12,7 +13,9 @@ import 'controller/chatReq_controller.dart';
 class RateAstrologerScreen extends StatefulWidget {
   final astrologer;
   final name;
-  const RateAstrologerScreen({super.key, required this.astrologer, required this.name});
+  final Map<String, dynamic> astrologerProfile;
+
+  const RateAstrologerScreen({super.key, required this.astrologer, required this.name, required this.astrologerProfile});
 
   @override
   State<RateAstrologerScreen> createState() => _RateAstrologerScreenState();
@@ -24,6 +27,7 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -59,8 +63,7 @@ class _RateAstrologerScreenState extends State<RateAstrologerScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(60),
                   child: Image.network(
-                    /* 'https://thetaramandal.com/public/astrologer/${widget.astrologerProfile.photo!}',*/
-                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzHQv_th9wq3ivQ1CVk7UZRxhbPq64oQrg5Q&usqp=CAU',
+                    'https://thetaramandal.com/public/astrologer/${widget.astrologerProfile['photo']}',
                     height: 83,
                     width: 83,
                     fit: BoxFit.cover,

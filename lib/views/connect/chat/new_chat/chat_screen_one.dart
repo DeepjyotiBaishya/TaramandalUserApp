@@ -25,7 +25,9 @@ class ChatScreenPage extends StatefulWidget {
   final int receiverId;
   final name;
   final String max_chat_duration;
-  const ChatScreenPage(this.requestId, this.receiverId, this.name, this.max_chat_duration, {Key? key}): super(key: key);
+  final Map<String, dynamic> astrologerProfile;
+
+  const ChatScreenPage(this.requestId, this.receiverId, this.name, this.max_chat_duration, {Key? key, required this.astrologerProfile}): super(key: key);
 
   @override
   _ChatScreenPageState createState() => _ChatScreenPageState();
@@ -65,7 +67,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
             );
           },
         );
-        Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name));
+        Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name, astrologerProfile: widget.astrologerProfile));
       }
     });
     _channel = IOWebSocketChannel.connect('ws://thetaramandal.com:8091');
@@ -196,7 +198,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                   );
                   // GetProfileController.to.getProfileApi(params: {});
                   // Get.offAll(() => const HomeController());
-                  Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name));
+                  Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name, astrologerProfile: widget.astrologerProfile));
                 }),
               Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -213,7 +215,7 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
                             message: e.toString(),
                           );
                         });
-                    Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name));
+                    Get.to(() => RateAstrologerScreen(astrologer: widget.receiverId, name: widget.name, astrologerProfile: widget.astrologerProfile));
                     // Get.offAll(() => const HomeController());
                     // GetProfileController.to.getProfileApi(params: {});
                   },
