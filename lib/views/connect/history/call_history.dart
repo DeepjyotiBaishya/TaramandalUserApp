@@ -166,7 +166,7 @@ class _CallHistoryState extends ConsumerState<CallHistory> {
                                         'Deduction: ${(HistoryController.to.userCallHistoryRes['data'] ?? [])[index]?['callcharges'] ?? '0'}',
                                         fontSize: 12,
                                         fontWeight: 500,
-                                        color: AppColors.lightGrey1,
+                                        color: AppColors.red,
                                       ),
                                       // Row(
                                       //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -205,14 +205,14 @@ class _CallHistoryState extends ConsumerState<CallHistory> {
                                       // ),
                                       DesignText(
                                         '${(HistoryController.to.userCallHistoryRes['data'] ?? [])[index]?['status'] ?? ''}',
-                                        fontSize: 10,
+                                        fontSize: 12,
                                         fontWeight: 500,
                                         color: ((HistoryController.to.userCallHistoryRes['data'] ?? [])[index]?['status'] ?? '') == 'Completed'
                                             ? AppColors.green
                                             : /*((HistoryController.to.userCallHistoryRes['data'] ?? [])[index]?['status'] ?? '') == 'busy'
                                                 ? AppColors.gold
                                                 : AppColors.red*/
-                                            AppColors.lightGrey1,
+                                            Colors.redAccent,
                                       ),
                                     ],
                                   ),

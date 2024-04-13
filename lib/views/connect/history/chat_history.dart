@@ -9,6 +9,8 @@ import 'package:rashi_network/ui/theme/container.dart';
 import 'package:rashi_network/ui/theme/text.dart';
 import 'package:rashi_network/utils/design_colors.dart';
 
+import '../../../ui/theme/buttons/buttons.dart';
+import 'chat_data.dart';
 import 'controller/history_controller.dart';
 
 class ChatHistory extends ConsumerStatefulWidget {
@@ -126,58 +128,43 @@ class _ChatHistoryState extends ConsumerState<ChatHistory> {
                                         color: AppColors.lightGrey1,
                                       ),
                                       DesignText(
-                                        'Deduction: ${(HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['chat_charges'] ?? 0}',
+                                        'Deduction: ${(HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['chat_charges'] ?? '0'}',
                                         fontSize: 12,
                                         fontWeight: 500,
-                                        color: AppColors.lightGrey1,
+                                        color: AppColors.red,
                                       ),
-                                      // Row(
-                                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      //   crossAxisAlignment: CrossAxisAlignment.center,
-                                      //   children: [
-                                      //     const DesignText(
-                                      //       'Rs.10/Min',
-                                      //       fontSize: 10,
-                                      //       fontWeight: 500,
-                                      //       color: AppColors.red,
-                                      //     ),
-                                      //     SizedBox(
-                                      //       height: 31,
-                                      //       width: 81,
-                                      //       child: DesignButtons(
-                                      //         onPressed: () async {
-                                      //           // Navigator.push(
-                                      //           //     context,
-                                      //           //     MaterialPageRoute(
-                                      //           //       builder: (context) =>
-                                      //           //           const ChatScreen(),
-                                      //           //     ));
-                                      //         },
-                                      //         textLabel: 'Call',
-                                      //         isTappedNotifier: ValueNotifier(false),
-                                      //         sideWidth: 1,
-                                      //         colorText: AppColors.darkTeal1,
-                                      //         borderSide: true,
-                                      //         colorBorderSide: AppColors.darkTeal1,
-                                      //         fontSize: 12,
-                                      //         fontWeight: 700,
-                                      //         color: Colors.transparent,
-                                      //       ),
-                                      //     ),
-                                      //   ],
-                                      // ),
-                                      DesignText(
-                                        '${(HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['status'] ?? ''}',
-                                        fontSize: 10,
-                                        fontWeight: 500,
-                                        color: ((HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['status'] ?? '') == 'Completed' ||
-                                                ((HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['status'] ?? '') == 'Accepted'
-                                            ? AppColors.green
-                                            : AppColors
-                                                .lightGrey1 /*((HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['status'] ?? '') == 'Waiting'
-                                                ? AppColors.gold
-                                                : AppColors.red*/
-                                        ,
+                                      Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            DesignText(
+                                              getStatusText((HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['status'] ?? 0),
+                                              fontSize: 12,
+                                              fontWeight: 500,
+                                              color: getStatusColor((HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['status'] ?? 0),
+                                            ),
+                                            SizedBox(
+                                              height: 31,
+                                            width: 81,
+                                            child: DesignButtons(
+                                              onPressed: () async {
+                                                var name = (HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['name'] ?? '-';
+                                                var chatId = (HistoryController.to.userChatHistoryRes['data'] ?? [])[index]?['chatid'] ?? 0;
+                                                Navigator.push(
+                                                    context, MaterialPageRoute( builder: (context) => ChatData(chatId,name)));
+                                              },
+                                              textLabel: 'Info',
+                                              isTappedNotifier: ValueNotifier(false),
+                                              sideWidth: 1,
+                                              colorText: AppColors.darkTeal1,
+                                              borderSide: true,
+                                              colorBorderSide: AppColors.darkTeal1,
+                                              fontSize: 12,
+                                              fontWeight: 700,
+                                              color: Colors.transparent,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -191,5 +178,43 @@ class _ChatHistoryState extends ConsumerState<ChatHistory> {
                   );
       }),
     );
+  }
+}
+
+String getStatusText(int status) {
+  switch (status) {
+    case 0:
+      return 'Pending';
+    case 1:
+      return 'Accepted';
+    case 2:
+      return 'Completed';
+    case 3:
+      return 'Declined';
+    case 4:
+      return 'Unanswered';
+    case 5:
+      return 'Failedtoconnect';
+    default:
+      return 'Unknown Status';
+  }
+}
+
+Color getStatusColor(int status) {
+  switch (status) {
+    case 0:
+      return Colors.amber;
+    case 1:
+      return Colors.green;
+    case 2:
+      return Colors.green;
+    case 3:
+      return Colors.red;
+    case 4:
+      return Colors.red;
+    case 5:
+      return Colors.red;
+    default:
+      return Colors.red;
   }
 }

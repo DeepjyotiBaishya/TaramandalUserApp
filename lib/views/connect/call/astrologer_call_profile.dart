@@ -10,7 +10,7 @@ import 'package:rashi_network/utils/design_colors.dart';
 import 'package:rashi_network/viewmodel/model/astrologer_model.dart';
 import 'package:rashi_network/views/connect/chat/chat_screen.dart';
 
-import '../history/chat_screen.dart';
+import '../history/chat_data.dart';
 import 'enter_detail_call_screen.dart';
 
 class AstrologerCallProfile extends StatefulWidget {

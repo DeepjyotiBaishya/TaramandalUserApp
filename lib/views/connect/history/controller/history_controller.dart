@@ -121,4 +121,60 @@ class HistoryController extends GetxController {
     }
     return null;
   }
+
+
+
+  RxMap<String, dynamic> chatInfoRes = <String, dynamic>{}.obs;
+
+  Future<bool?> chatInfoApi({
+    required Map params,
+    Function? success,
+    Function? error,
+  }) async {
+    log(params.toString(), name: 'PARAMS');
+    PrefrenceDataController.to.token.value = await PreferencesHelper().getPreferencesStringData(PreferencesHelper.token) ?? '';
+    log(PrefrenceDataController.to.token.value.toString(), name: 'TOEKN');
+    try {
+      dio.Response response = await dio.Dio().post(ApiConfig.chatInfo,
+          data: params,
+          options: dio.Options(
+            contentType: dio.Headers.jsonContentType,
+            headers: {"Authorization": "Bearer ${PrefrenceDataController.to.token.value}"},
+          ));
+
+      if (response.statusCode == 200) {
+        chatInfoRes.value = response.data;
+        log(chatInfoRes.toString(), name: 'chatInfoRes');
+
+        if (response.data != null) {
+          if (response.data['status']) {
+            if (success != null) {
+              success();
+            }
+          } else {
+            if (error != null) {
+              error(response.data['message'] ?? 'Something went Wrong..');
+            }
+          }
+
+          return true;
+        } else {
+          if (error != null) {
+            error(response.data['message'] ?? 'Something went Wrong..');
+          }
+          return false;
+        }
+      } else {
+        print(response.data);
+        if (error != null) {
+          error(response.data['message'] ?? 'Something went Wrong..');
+        }
+      }
+    } on dio.DioError catch (e) {
+      if (error != null) {
+        error(e.response?.data['message'] ?? "Something went wrong");
+      }
+    }
+    return null;
+  }
 }
